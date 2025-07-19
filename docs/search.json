@@ -1,0 +1,51 @@
+[
+  {
+    "objectID": "posts/wi-imm-arrests/index.html",
+    "href": "posts/wi-imm-arrests/index.html",
+    "title": "Wisconsin Immigration Arrests",
+    "section": "",
+    "text": "New data on immigration arrests was released recently. I learned about it from an Axios article yesterday highlighting the June increase in non-criminal arrests (non-criminal because “being in the U.S. illegally is a civil, not criminal, violation”). The article led with the following chart:\nI was curious whether there had been a proportionate increase in ICE arrests near me in Wisconsin, as opposed to the increase being concentrated in places like California. So I downloaded the data from the Deportation Data Project.1\nImport data into Stata\nclear all\nquietly import excel \"C:\\Users\\tjhuegerich\\Downloads\\2025-ICLI-00019_2024-ICFO-39357_ERO Admin Arrests_raw.xlsx\", sheet(\"Admin Arrests\") cellrange(A7:W265233) firstrow\nThe raw data is detailed enough to identify individual arrests by date and location.2 But here I just need date, state, and “criminal status.”\nCollapse to counts by state and criminal classification\ngen date = dofc(ApprehensionDate)\nquietly drop if date &gt; mdy(6,26,2025) // limited 6/27 data\nencode ApprehensionCriminality, gen(cs_id)\nassert !missing(BirthYear)\ncollapse (count) n=BirthYear, by(date ApprehensionState cs_id)\nFirst I confirmed that I could replicate the Axios chart.\nReplicate Axios chart\nframe copy default NATIONAL\nframe NATIONAL {\n    collapse (sum) n, by(date cs_id)\n    quietly {\n        xtset cs_id date\n        tsfill, full\n        replace n = 0 if missing(n)\n        tssmooth ma n_7trailing_ = n, window(6 1 0)\n        drop n\n        reshape wide n_7trailing_ , i(date) j(cs_id)\n    }\n    format date %tdMonYY\n    label var n_7trailing_1 \"At least one conviction\"\n    label var n_7trailing_2 \"At least one charge (no conviction)\"\n    label var n_7trailing_3 \"No criminal charges or convictions\"\n    tsline n_7trailing_1 n_7trailing_2 n_7trailing_3 if date &gt;= mdy(1,7,2025), ///\n        lcolor(\"#FE9116\" \"#FEC170\" \"#102BB6\") xtitle(\"\") xlabel(#7) legend(position(12)) ///\n        title(\"ICE arrests by reported criminal status\") ///\n        subtitle(\"Daily, Seven-day trailing average\")\n}\n\n\n\n\n\nNote: Arrests were counted even if they did not lead to detainment; Multiple arrests of the same individual were counted separately; original chart by Kavya Beheraj/Axios.\nThen I zoomed out to allow a comparison between the Biden and Trump administrations, also using a different style of chart to more easily see total immigration arrests."
+  },
+  {
+    "objectID": "posts/wi-imm-arrests/index.html#national",
+    "href": "posts/wi-imm-arrests/index.html#national",
+    "title": "Wisconsin Immigration Arrests",
+    "section": "National",
+    "text": "National\n\n\nExpand and reformat national chart\nframe NATIONAL {\n    quietly replace date = date - 3 // center moving averages\n    gen cumul2_7t = n_7trailing_1 + n_7trailing_2\n    gen cumul3_7t = cumul2_7t + n_7trailing_3\n    *label var n_7trailing_1 \"At least one conviction\"\n    label var cumul2_7t \"At least one charge (no conviction)\"\n    label var cumul3_7t \"No criminal charges or convictions\"\n    format date %tdMonCCYY\n    twoway (area cumul3_7t cumul2_7t n_7trailing_1 date if date &gt;= mdy(9,23,2023), ///\n            color(\"#102BB6\" \"#FEC170\" \"#FE9116\") fintensity(75 75 75) lwidth(none none none)), ///\n        xtitle(\"\") legend(ring(0) bplacement(12)) xlabel(#11) ymtick(##5) ///\n        title(\"ICE arrests by reported criminal status\") ///\n        subtitle(\"Daily, Seven-day moving average\")\n}"
+  },
+  {
+    "objectID": "posts/wi-imm-arrests/index.html#california",
+    "href": "posts/wi-imm-arrests/index.html#california",
+    "title": "Wisconsin Immigration Arrests",
+    "section": "California",
+    "text": "California\nThe same chart limited to California shows a Trump Administration increase in arrests just as large as the national one, with an even more pronounced increase in June.\n\n\nCreate California chart\nframe copy default CALIFORNIA\nframe CALIFORNIA {\n    quietly keep if ApprehensionState == \"CALIFORNIA\"\n    collapse (sum) n, by(date cs_id)\n    quietly {\n        xtset cs_id date\n        tsfill, full\n        replace n = 0 if missing(n)\n        tssmooth ma n_7trailing_ = n, window(6 1 0)\n        drop n\n        reshape wide n_7trailing_ , i(date) j(cs_id)\n        replace date = date - 3 // center moving averages\n    }\n    gen cumul2_7t = n_7trailing_1 + n_7trailing_2\n    gen cumul3_7t = cumul2_7t + n_7trailing_3\n    label var n_7trailing_1 \"At least one conviction\"\n    label var cumul2_7t \"At least one charge (no conviction)\"\n    label var cumul3_7t \"No criminal charges or convictions\"\n    format date %tdMonCCYY\n    twoway (area cumul3_7t cumul2_7t n_7trailing_1 date if date &gt;= mdy(9,23,2023), ///\n            color(\"#102BB6\" \"#FEC170\" \"#FE9116\") fintensity(75 75 75) lwidth(none none none)), ///\n        xtitle(\"\") legend(ring(0) bplacement(12)) xlabel(#11) ymtick(##5) ///\n        title(\"California ICE arrests by reported criminal status\") ///\n        subtitle(\"Daily, Seven-day moving average\")\n}"
+  },
+  {
+    "objectID": "posts/wi-imm-arrests/index.html#wisconsin",
+    "href": "posts/wi-imm-arrests/index.html#wisconsin",
+    "title": "Wisconsin Immigration Arrests",
+    "section": "Wisconsin",
+    "text": "Wisconsin\nFinally, I wanted a comparable chart for Wisconsin. Because daily Wisconsin arrests are often zero, I instead plotted weekly arrests, using a 4-week moving average for smoothing.\nFor comparison, I made the y-axis match the scale of the California chart after adjusting for estimated 2022 unauthorized immigrant populations (and the use of a weekly measure rather than daily).\n\n\nCreate Wisconsin chart\nframe copy default WISCONSIN\nframe WISCONSIN {\n    quietly keep if ApprehensionState == \"WISCONSIN\"\n    gen week_starting = date - dow(date)\n    collapse (sum) n, by(cs_id week_starting)\n    quietly {\n        xtset cs_id week_starting\n        tsfill, full\n        assert missing(n) if dow(week_starting) != 0\n        keep if dow(week_starting) == 0\n        assert dow(week_starting) == 0\n        replace n = 0 if missing(n)\n        gen n_4w_ma = (F7.n + n + L7.n + L14.n)/4\n        drop n\n        drop if missing(n_4w_ma)\n        reshape wide n_4w_ma, i(week_starting) j(cs_id)\n    }\n    gen cumul2_4w = n_4w_ma1 + n_4w_ma2\n    gen cumul3_4w = cumul2_4w + n_4w_ma3\n\n    label var n_4w_ma1 \"At least one conviction\"\n    label var cumul2_4w \"At least one charge (no conviction)\"\n    label var cumul3_4w \"No criminal charges or convictions\"\n    format week_starting %tdMonCCYY\n    twoway (area cumul3_4w cumul2_4w n_4w_ma1 week_starting if week_starting &gt;= mdy(9,20,2023), ///\n            color(\"#102BB6\" \"#FEC170\" \"#FE9116\") fintensity(75 75 75) lwidth(none none none)), ///\n        xtitle(\"\") legend(ring(0) bplacement(11)) xlabel(#10) ///\n        yscale(range(46.7))  ///\n        title(\"Wisconsin ICE arrests by reported criminal status\") ///\n        subtitle(\"Weekly, Four-week trailing average\")\n}\n\n\n\n\n\n\n\n\n\nTotal Wisconsin arrests had apparently been comparable to pre-2025 rates until the past couple months. And the recent increase is not as dramatic as that experienced by California or the U.S. as a whole.\nThere is a lot more that could be done with this data. Ideally someone would put up some interactive charts so that answering a question like this would be easier. If I become aware of any, I’ll put the link(s) here."
+  },
+  {
+    "objectID": "posts/wi-imm-arrests/index.html#footnotes",
+    "href": "posts/wi-imm-arrests/index.html#footnotes",
+    "title": "Wisconsin Immigration Arrests",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nThe “Late June 2025” Arrests data, specifically.↩︎\nFor instance, I was able to find the record for an acquaintance arrested in the Madison area. He is classified in the data as a “Convicted Criminal” despite, I’m told, merely having the same name as a fugitive from a different country, one thousands of miles away from his own. So maybe take these ICE classifications with a grain of salt.↩︎"
+  },
+  {
+    "objectID": "blog.html",
+    "href": "blog.html",
+    "title": "data blog",
+    "section": "",
+    "text": "Wisconsin Immigration Arrests\n\n\n\n\n\n\n\n\nJul 18, 2025\n\n\nTim Huegerich\n\n\n\n\n\nNo matching items\n Back to top"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Tim Huegerich",
+    "section": "",
+    "text": "[Under construction]\n\n\n Back to top"
+  }
+]

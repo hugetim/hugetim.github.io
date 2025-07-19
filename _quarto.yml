@@ -1,0 +1,25 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Tim Huegerich - economist+"
+  navbar:
+    right:
+      - href: blog.qmd
+        text: blog
+      - icon: github
+        href: https://github.com/hugetim
+      - icon: linkedin
+        href: https://www.linkedin.com/in/tim-huegerich-26101a
+  back-to-top-navigation: true
+  
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+    css: styles.css
+
+
+

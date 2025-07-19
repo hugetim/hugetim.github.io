@@ -1,0 +1,16 @@
+---
+title: "Tim Huegerich"
+image: profile.jpg
+about:
+  template: solana
+  links:
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/tim-huegerich-26101a8/
+    - icon: github
+      text: Github
+      href: https://github.com/hugetim
+
+---
+
+[Under construction]
