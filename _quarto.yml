@@ -13,6 +13,9 @@ website:
       - icon: linkedin
         href: https://www.linkedin.com/in/tim-huegerich-26101a
   back-to-top-navigation: true
+  site-url: https://hugetim.github.io
+  repo-url: https://github.com/hugetim/hugetim.github.io
+  repo-actions: source
   
 format:
   html:
