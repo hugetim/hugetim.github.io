@@ -1,0 +1,850 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>Tim Huegerich - economist+</title>
+<link>https://hugetim.github.io/blog.html</link>
+<atom:link href="https://hugetim.github.io/blog.xml" rel="self" type="application/rss+xml"/>
+<description>Homepage of Tim Huegerich</description>
+<generator>quarto-1.7.32</generator>
+<lastBuildDate>Fri, 18 Jul 2025 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>Wisconsin Immigration Arrests</title>
+  <link>https://hugetim.github.io/posts/wi-imm-arrests/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>New data on immigration arrests was released recently. I learned about it from an <a href="https://www.axios.com/2025/07/17/trump-ice-raids-arrests-immigration">Axios article</a> yesterday highlighting the June increase in non-criminal arrests (non-criminal because “being in the U.S. illegally is a civil, not criminal, violation”). The article led with the following chart:</p>
+<div class="quarto-layout-panel" data-layout="[[-20,60,-20]]">
+<div class="quarto-layout-row">
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 20.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 60.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="image.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Axios chart"><img src="https://hugetim.github.io/posts/wi-imm-arrests/image.png" class="img-fluid figure-img" alt="Axios chart of ICE arrests by reported criminal status"></a></p>
+<figcaption>Axios chart</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 20.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+<p>I was curious whether there had been a proportionate increase in ICE arrests near me in Wisconsin, as opposed to the increase being concentrated in places like California. So I downloaded the data from the <a href="https://deportationdata.org/data/ice.html">Deportation Data Project</a>.<sup>1</sup></p>
+<div id="6455180f" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Import data into Stata</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">clear</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">all</span></span>
+<span id="cb1-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">quietly</span> import excel <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C:\Users</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\t</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">jhuegerich\Downloads\2025-ICLI-00019_2024-ICFO-39357_ERO Admin Arrests_raw.xlsx"</span>, sheet(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Admin Arrests"</span>) cellrange(A7:W265233) firstrow</span></code></pre></div>
+</details>
+</div>
+<p>The raw data is detailed enough to identify individual arrests by date and location.<sup>2</sup> But here I just need date, state, and “criminal status.”</p>
+<div id="427d2fd2" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Collapse to counts by state and criminal classification</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb2-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">gen</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> = dofc(ApprehensionDate)</span>
+<span id="cb2-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">quietly</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">drop</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> &gt; <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mdy</span>(6,26,2025) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// limited 6/27 data</span></span>
+<span id="cb2-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">encode</span> ApprehensionCriminality, <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">gen</span>(cs_id)</span>
+<span id="cb2-4"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">assert</span> !<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">missing</span>(BirthYear)</span>
+<span id="cb2-5"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">collapse</span> (<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">count</span>) n=BirthYear, <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">by</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> ApprehensionState cs_id)</span></code></pre></div>
+</details>
+</div>
+<p>First I confirmed that I could replicate the Axios chart.</p>
+<div id="da5dd20f" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Replicate Axios chart</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb3-1">frame copy <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">default</span> NATIONAL</span>
+<span id="cb3-2">frame NATIONAL {</span>
+<span id="cb3-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">collapse</span> (<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">sum</span>) n, <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">by</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> cs_id)</span>
+<span id="cb3-4">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">quietly</span> {</span>
+<span id="cb3-5">        xtset cs_id <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span></span>
+<span id="cb3-6">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">tsfill</span>, full</span>
+<span id="cb3-7">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">replace</span> n = 0 <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">missing</span>(n)</span>
+<span id="cb3-8">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">tssmooth</span> ma n_7trailing_ = n, <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">window</span>(6 1 0)</span>
+<span id="cb3-9">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">drop</span> n</span>
+<span id="cb3-10">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">reshape</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">wide</span> n_7trailing_ , i(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span>) j(cs_id)</span>
+<span id="cb3-11">    }</span>
+<span id="cb3-12">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">format</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> %tdMonYY</span>
+<span id="cb3-13">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">label</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">var</span> n_7trailing_1 <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"At least one conviction"</span></span>
+<span id="cb3-14">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">label</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">var</span> n_7trailing_2 <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"At least one charge (no conviction)"</span></span>
+<span id="cb3-15">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">label</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">var</span> n_7trailing_3 <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No criminal charges or convictions"</span></span>
+<span id="cb3-16">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">tsline</span> n_7trailing_1 n_7trailing_2 n_7trailing_3 <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> &gt;= <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mdy</span>(1,7,2025), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb3-17">        lcolor(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#FE9116"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#FEC170"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#102BB6"</span>) <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">xtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>) <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">xlabel</span>(#7) <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">legend</span>(<span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">position</span>(12)) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb3-18">        <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">title</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ICE arrests by reported criminal status"</span>) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb3-19">        <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">subtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Daily, Seven-day trailing average"</span>)</span>
+<span id="cb3-20">}</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hugetim.github.io/posts/wi-imm-arrests/index_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+<figcaption>Note: Arrests were counted even if they did not lead to detainment; Multiple arrests of the same individual were counted separately; original chart by Kavya Beheraj/Axios.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Then I zoomed out to allow a comparison between the Biden and Trump administrations, also using a different style of chart to more easily see total immigration arrests.</p>
+<section id="national" class="level2">
+<h2 class="anchored" data-anchor-id="national">National</h2>
+<div id="e01f4e67" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Expand and reformat national chart</summary>
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb4-1">frame NATIONAL {</span>
+<span id="cb4-2">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">quietly</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">replace</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> = <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> - 3 <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// center moving averages</span></span>
+<span id="cb4-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">gen</span> cumul2_7t = n_7trailing_1 + n_7trailing_2</span>
+<span id="cb4-4">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">gen</span> cumul3_7t = cumul2_7t + n_7trailing_3</span>
+<span id="cb4-5">    *<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">label</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">var</span> n_7trailing_1 <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"At least one conviction"</span></span>
+<span id="cb4-6">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">label</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">var</span> cumul2_7t <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"At least one charge (no conviction)"</span></span>
+<span id="cb4-7">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">label</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">var</span> cumul3_7t <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No criminal charges or convictions"</span></span>
+<span id="cb4-8">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">format</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> %tdMonCCYY</span>
+<span id="cb4-9">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">twoway</span> (area cumul3_7t cumul2_7t n_7trailing_1 <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> &gt;= <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mdy</span>(9,23,2023), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb4-10">            <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">color</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#102BB6"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#FEC170"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#FE9116"</span>) fintensity(75 75 75) lwidth(<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">none</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">none</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">none</span>)), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb4-11">        <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">xtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>) <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">legend</span>(<span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">ring</span>(0) bplacement(12)) <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">xlabel</span>(#11) ymtick(##5) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb4-12">        <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">title</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ICE arrests by reported criminal status"</span>) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb4-13">        <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">subtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Daily, Seven-day moving average"</span>)</span>
+<span id="cb4-14">}</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://hugetim.github.io/posts/wi-imm-arrests/index_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="california" class="level2">
+<h2 class="anchored" data-anchor-id="california">California</h2>
+<p>The same chart limited to California shows a Trump Administration increase in arrests just as large as the national one, with an even more pronounced increase in June.</p>
+<div id="0376e022" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Create California chart</summary>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb5-1">frame copy <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">default</span> CALIFORNIA</span>
+<span id="cb5-2">frame CALIFORNIA {</span>
+<span id="cb5-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">quietly</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">keep</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> ApprehensionState == <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"CALIFORNIA"</span></span>
+<span id="cb5-4">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">collapse</span> (<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">sum</span>) n, <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">by</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> cs_id)</span>
+<span id="cb5-5">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">quietly</span> {</span>
+<span id="cb5-6">        xtset cs_id <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span></span>
+<span id="cb5-7">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">tsfill</span>, full</span>
+<span id="cb5-8">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">replace</span> n = 0 <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">missing</span>(n)</span>
+<span id="cb5-9">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">tssmooth</span> ma n_7trailing_ = n, <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">window</span>(6 1 0)</span>
+<span id="cb5-10">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">drop</span> n</span>
+<span id="cb5-11">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">reshape</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">wide</span> n_7trailing_ , i(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span>) j(cs_id)</span>
+<span id="cb5-12">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">replace</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> = <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> - 3 <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// center moving averages</span></span>
+<span id="cb5-13">    }</span>
+<span id="cb5-14">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">gen</span> cumul2_7t = n_7trailing_1 + n_7trailing_2</span>
+<span id="cb5-15">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">gen</span> cumul3_7t = cumul2_7t + n_7trailing_3</span>
+<span id="cb5-16">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">label</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">var</span> n_7trailing_1 <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"At least one conviction"</span></span>
+<span id="cb5-17">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">label</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">var</span> cumul2_7t <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"At least one charge (no conviction)"</span></span>
+<span id="cb5-18">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">label</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">var</span> cumul3_7t <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No criminal charges or convictions"</span></span>
+<span id="cb5-19">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">format</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> %tdMonCCYY</span>
+<span id="cb5-20">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">twoway</span> (area cumul3_7t cumul2_7t n_7trailing_1 <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> &gt;= <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mdy</span>(9,23,2023), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb5-21">            <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">color</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#102BB6"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#FEC170"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#FE9116"</span>) fintensity(75 75 75) lwidth(<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">none</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">none</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">none</span>)), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb5-22">        <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">xtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>) <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">legend</span>(<span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">ring</span>(0) bplacement(12)) <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">xlabel</span>(#11) ymtick(##5) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb5-23">        <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">title</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"California ICE arrests by reported criminal status"</span>) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb5-24">        <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">subtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Daily, Seven-day moving average"</span>)</span>
+<span id="cb5-25">}</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://hugetim.github.io/posts/wi-imm-arrests/index_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="wisconsin" class="level2">
+<h2 class="anchored" data-anchor-id="wisconsin">Wisconsin</h2>
+<p>Finally, I wanted a comparable chart for Wisconsin. Because daily Wisconsin arrests are often zero, I instead plotted weekly arrests, using a 4-week moving average for smoothing.</p>
+<p>For comparison, I made the y-axis match the scale of the California chart after adjusting for <a href="https://www.pewresearch.org/wp-content/uploads/sites/20/2024/07/SR_24.07.22_unauthorized-immigrants_table-3.xlsx">estimated 2022 unauthorized immigrant populations</a> (and the use of a weekly measure rather than daily).</p>
+<div id="2e7ccd97" class="cell" data-execution_count="6">
+<details class="code-fold">
+<summary>Create Wisconsin chart</summary>
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode stata code-with-copy"><code class="sourceCode stata"><span id="cb6-1">frame copy <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">default</span> WISCONSIN</span>
+<span id="cb6-2">frame WISCONSIN {</span>
+<span id="cb6-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">quietly</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">keep</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> ApprehensionState == <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"WISCONSIN"</span></span>
+<span id="cb6-4">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">gen</span> week_starting = <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> - <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dow</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span>)</span>
+<span id="cb6-5">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">collapse</span> (<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">sum</span>) n, <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">by</span>(cs_id week_starting)</span>
+<span id="cb6-6">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">quietly</span> {</span>
+<span id="cb6-7">        xtset cs_id week_starting</span>
+<span id="cb6-8">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">tsfill</span>, full</span>
+<span id="cb6-9">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">assert</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">missing</span>(n) <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dow</span>(week_starting) != 0</span>
+<span id="cb6-10">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">keep</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dow</span>(week_starting) == 0</span>
+<span id="cb6-11">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">assert</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dow</span>(week_starting) == 0</span>
+<span id="cb6-12">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">replace</span> n = 0 <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">missing</span>(n)</span>
+<span id="cb6-13">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">gen</span> n_4w_ma = (F7.n + n + L7.n + L14.n)/4</span>
+<span id="cb6-14">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">drop</span> n</span>
+<span id="cb6-15">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">drop</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">missing</span>(n_4w_ma)</span>
+<span id="cb6-16">        <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">reshape</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">wide</span> n_4w_ma, i(week_starting) j(cs_id)</span>
+<span id="cb6-17">    }</span>
+<span id="cb6-18">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">gen</span> cumul2_4w = n_4w_ma1 + n_4w_ma2</span>
+<span id="cb6-19">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">gen</span> cumul3_4w = cumul2_4w + n_4w_ma3</span>
+<span id="cb6-20"></span>
+<span id="cb6-21">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">label</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">var</span> n_4w_ma1 <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"At least one conviction"</span></span>
+<span id="cb6-22">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">label</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">var</span> cumul2_4w <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"At least one charge (no conviction)"</span></span>
+<span id="cb6-23">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">label</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">var</span> cumul3_4w <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No criminal charges or convictions"</span></span>
+<span id="cb6-24">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">format</span> week_starting %tdMonCCYY</span>
+<span id="cb6-25">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">twoway</span> (area cumul3_4w cumul2_4w n_4w_ma1 week_starting <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> week_starting &gt;= <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mdy</span>(9,20,2023), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb6-26">            <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">color</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#102BB6"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#FEC170"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#FE9116"</span>) fintensity(75 75 75) lwidth(<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">none</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">none</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">none</span>)), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb6-27">        <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">xtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>) <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">legend</span>(<span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">ring</span>(0) bplacement(11)) <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">xlabel</span>(#10) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb6-28">        <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">yscale</span>(<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">range</span>(46.7))  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb6-29">        <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">title</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Wisconsin ICE arrests by reported criminal status"</span>) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">///</span></span>
+<span id="cb6-30">        <span class="bn" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">subtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Weekly, Four-week trailing average"</span>)</span>
+<span id="cb6-31">}</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://hugetim.github.io/posts/wi-imm-arrests/index_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Total Wisconsin arrests had apparently been comparable to pre-2025 rates until the past couple months. And the recent increase is not as dramatic as that experienced by California or the U.S. as a whole.</p>
+<p>There is a lot more that could be done with this data. Ideally someone would put up some interactive charts so that answering a question like this would be easier. If I become aware of any, I’ll put the link(s) here.</p>
+
+
+</section>
+
+
+<a onclick="window.scrollTo(0, 0); return false;" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a><div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>The “Late June 2025” Arrests data, specifically.↩︎</p></li>
+<li id="fn2"><p>For instance, I was able to find the record for an acquaintance arrested in the Madison area. He is classified in the data as a “Convicted Criminal” despite, I’m told, merely having the same name as a fugitive from a different country, one thousands of miles away from his own. So maybe take these ICE classifications with a grain of salt.↩︎</p></li>
+</ol>
+</section></div> ]]></description>
+  <guid>https://hugetim.github.io/posts/wi-imm-arrests/</guid>
+  <pubDate>Fri, 18 Jul 2025 05:00:00 GMT</pubDate>
+  <media:content url="https://hugetim.github.io/posts/wi-imm-arrests/wisconsin.png" medium="image" type="image/png" height="86" width="144"/>
+</item>
+</channel>
+</rss>
