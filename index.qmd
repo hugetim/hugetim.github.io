@@ -18,4 +18,4 @@ resources:
   - "cv2025.pdf"
 ---
 
-[Under construction]
+[Under construction, transitioning from an [old sites page](https://sites.google.com/view/tim-huegerich)]
