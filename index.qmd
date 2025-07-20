@@ -10,7 +10,12 @@ about:
     - icon: github
       text: Github
       href: https://github.com/hugetim
-
+    - text: Email
+      href: mailto:thuegerich@uwalumni.com
+    - text: CV
+      href: cv2025.pdf
+resources:
+  - "cv2025.pdf"
 ---
 
 [Under construction]
