@@ -1,1 +1,10 @@
 /* css styles */
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Inter", sans-serif;
+}
+
+/* Workaround while they address https://github.com/quarto-dev/quarto-cli/discussions/12888 */
+pre, code {
+    font-family: Atkinson Hyperlegible Mono, monospace;
+}
