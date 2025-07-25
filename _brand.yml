@@ -2,8 +2,11 @@ typography:
   fonts:
     - family: Atkinson Hyperlegible Next
       source: google
+    - family: Atkinson Hyperlegible Mono
+      source: google
     - family: Inter
       source: google
   base: Atkinson Hyperlegible Next
   headings: Inter
+  monospace: Atkinson Hyperlegible Mono
   

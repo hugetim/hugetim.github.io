@@ -23,19 +23,4 @@ format:
     theme:
       - cosmo
       - brand
-    monofont: Atkinson Hyperlegible Mono
     fontsize: 15px
-    include-in-header: 
-      text: |
-        <style>
-        @font-face {font-family: Atkinson Hyperlegible Mono; src: url("/fonts/AtkinsonHyperlegibleMono-Regular.ttf"); font-style:normal;}
-        @font-face {font-family: Atkinson Hyperlegible Mono Italic; src: url("/fonts/AtkinsonHyperlegibleMono-Italic.ttf"); font-style:italic,oblique;}
-        @font-face {font-family: Atkinson Hyperlegible Mono Bold; src: url("/fonts/AtkinsonHyperlegibleMono-Bold.ttf"); font-style:normal; font-weight: bold;}
-        @font-face {font-family: Atkinson Hyperlegible Mono BoldItalic; src: url("/fonts/AtkinsonHyperlegibleMono-BoldItalic.ttf"); font-style:italic,oblique; font-weight: bold;}
-        </style>
-    css: styles.css # manually sets 'Atkinson Hyperlegible Mono' code
-resources:
-  - "/fonts/AtkinsonHyperlegibleMono-Regular.ttf"
-  - "/fonts/AtkinsonHyperlegibleMono-Italic.ttf"
-  - "/fonts/AtkinsonHyperlegibleMono-Bold.ttf"
-  - "/fonts/AtkinsonHyperlegibleMono-BoldItalic.ttf"
