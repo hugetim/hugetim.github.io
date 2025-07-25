@@ -11,6 +11,7 @@ website:
         text: nbstata
       - href: blog.qmd
         text: blog
+    background: light
   back-to-top-navigation: true
   site-url: https://hugetim.github.io
   repo-url: https://github.com/hugetim/hugetim.github.io
@@ -22,21 +23,17 @@ format:
     theme:
       - cosmo
       - brand
-    mainfont: Atkinson Hyperlegible Next
     monofont: Atkinson Hyperlegible Mono
     fontsize: 15px
     include-in-header: 
       text: |
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
         <style>
         @font-face {font-family: Atkinson Hyperlegible Mono; src: url("/fonts/AtkinsonHyperlegibleMono-Regular.ttf"); font-style:normal;}
         @font-face {font-family: Atkinson Hyperlegible Mono Italic; src: url("/fonts/AtkinsonHyperlegibleMono-Italic.ttf"); font-style:italic,oblique;}
         @font-face {font-family: Atkinson Hyperlegible Mono Bold; src: url("/fonts/AtkinsonHyperlegibleMono-Bold.ttf"); font-style:normal; font-weight: bold;}
         @font-face {font-family: Atkinson Hyperlegible Mono BoldItalic; src: url("/fonts/AtkinsonHyperlegibleMono-BoldItalic.ttf"); font-style:italic,oblique; font-weight: bold;}
         </style>
-    css: styles.css # manually sets 'Inter' headings and 'Atkinson Hyperlegible Mono' code
+    css: styles.css # manually sets 'Atkinson Hyperlegible Mono' code
 resources:
   - "/fonts/AtkinsonHyperlegibleMono-Regular.ttf"
   - "/fonts/AtkinsonHyperlegibleMono-Italic.ttf"

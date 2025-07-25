@@ -1,0 +1,9 @@
+typography:
+  fonts:
+    - family: Atkinson Hyperlegible Next
+      source: google
+    - family: Inter
+      source: google
+  base: Atkinson Hyperlegible Next
+  headings: Inter
+  
