@@ -35,6 +35,13 @@
     "text": "Footnotes\n\n\nThe “Late June 2025” Arrests data, specifically.↩︎\nFor instance, I was able to find the record for an acquaintance arrested in the Madison area. He is classified in the data as a “Convicted Criminal” despite, I’m told, merely having the same name as a fugitive from a different country, one thousands of miles away from his own. So maybe take these ICE classifications with a grain of salt.↩︎\nPew Research estimates California’s 2022 unauthorized immigrant population as 1.8 million and Wisconsin’s as 80 thousand. So I set the Wisconsin y-axis maximum to: \\(150 \\times \\frac{80}{1800} \\times 7 \\approx 46.7\\).↩︎"
   },
   {
+    "objectID": "code.html",
+    "href": "code.html",
+    "title": "code",
+    "section": "",
+    "text": "nbstata - A Jupyter kernel for Stata built on pystata\n\n\n\n Back to top"
+  },
+  {
     "objectID": "blog.html",
     "href": "blog.html",
     "title": "data blog",
@@ -44,7 +51,7 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Tim Huegerich – economics and other pedantry",
+    "title": "Tim Huegerich – research",
     "section": "",
     "text": "[Under construction, transitioning from an old sites page]\n\n\n Back to top"
   }

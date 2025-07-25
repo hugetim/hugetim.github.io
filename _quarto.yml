@@ -3,12 +3,11 @@ project:
   output-dir: docs
 
 website:
-  title: "Tim Huegerich – economics and other pedantry"
+  title: "Tim Huegerich – research"
   description: "Homepage of Tim Huegerich"
   navbar:
     right:
-      - href: https://hugetim.github.io/nbstata/
-        text: nbstata
+      - href: code.qmd
       - href: blog.qmd
         text: blog
     background: light

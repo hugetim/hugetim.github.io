@@ -1,0 +1,5 @@
+---
+title: "code"
+---
+
+[nbstata](https://hugetim.github.io/nbstata/) - A Jupyter kernel for Stata built on pystata
