@@ -4,6 +4,7 @@ subtitle: "A simple fix for the ECI's new sensitivity to Epoch's 99.9% clip"
 description: "Epoch's switch to a Bayesian ECI makes some results of interest depend on how benchmark scores of 0 or 1 are clipped (to 0.001 or 0.999), but extending the beta distribution to handle scores of exactly 0 or 1 provides similar results without the clip's arbitrariness."
 date: 2026-11-12
 draft: true
+toc: true
 execute:
   echo: false
   warning: false
@@ -58,6 +59,9 @@ fable = gap["5.2_gap"]                                                # the gap 
 gap_ratio = fable["clip_1e-12"] / fable["clip_0.01"]
 gap_per_tenfold = (fable["clip_1e-12"] - fable["clip_1e-08"]) / 4     # still growing at the tightest clips
 # XB against my rerun of Epoch's model: Fable 5.2's ECI under each, and that its move is the largest at ECI 150+
+above_interval = fable > gap["5.2_pi_hi"]                             # is Fable 5.2 above the trend's 90% prediction interval?
+assert not above_interval[["Epoch published", "clip_0.01", "clip_0.001", "XB"]].any()  # the text says: inside for these,
+assert above_interval[[s for s in gap.index if s.startswith("clip_") and float(s[5:]) <= 1e-4]].all()  # above from 0.01% on
 fable_eci = gap["5.2_eci"]
 assert abs((fable_eci["clip_0.001"] - fable_eci["XB"]) - xb.frontier_max_abs_change) < 0.01
 assert xb.frontier_mean_abs_change > clips.frontier_mean_abs_change.max()  # XB moves them more than any clip does
@@ -138,9 +142,9 @@ Epoch's November 4 [shift to a Bayesian methodology](https://epoch.ai/publicatio
 
 ## How 100% scores are clipped moves Fable 5.2's ECI
 
-In particular, the choice of clip impacts how far above the prior trend Fable 5.2 lands. Its `{python} fmt(fable["clip_0.001"], ".1f")` point jump with Epoch's 0.1% clip would instead be `{python} fmt(fable["clip_0.01"], ".1f")` points with a 1% clip, or up to `{python} fmt(fable["clip_1e-12"], ".1f")` points with a 10<sup>−12</sup> clip, `{python} fmt(gap_ratio, ".0f")` times the 1% clip's result.^[Under the extended-support beta (XB) proposed below, Fable is `{python} fmt(fable["XB"], ".1f")` ECI points above trend.] The jump would be even higher for clips still closer to the actual scores of exactly 100% (or 0%).^[One might think the clip should be as small as possible, since 99.9999% is closer to a true 100% than 99.9% is. But the results do not settle down as the clip shrinks: at 10<sup>−12</sup>, Fable 5.2's gap is still growing by about `{python} fmt(gap_per_tenfold, ".1f")` points with each tenfold tightening. Alternatively, one could argue for a larger clip proportionate to benchmarks' resolutions based on their question counts. (FrontierMath Tier 4 has `{python} st.fm4_questions` questions.)]
+In particular, the choice of clip impacts how far above the prior trend Fable 5.2 lands. Its `{python} fmt(fable["clip_0.001"], ".1f")` point jump with Epoch's 0.1% clip would instead be `{python} fmt(fable["clip_0.01"], ".1f")` points with a 1% clip, or up to `{python} fmt(fable["clip_1e-12"], ".1f")` points with a 10<sup>−12</sup> clip, `{python} fmt(gap_ratio, ".0f")` times the 1% clip's result.^[Under the extended-support beta (XB) proposed below, Fable is `{python} fmt(fable["XB"], ".1f")` ECI points above trend, also inside the trend's 90% prediction interval.] The jump would be even higher for clips still closer to the actual scores of exactly 100% (or 0%).^[One might think the clip should be as small as possible, since 99.9999% is closer to a true 100% than 99.9% is. But the results do not settle down as the clip shrinks: at 10<sup>−12</sup>, Fable 5.2's gap is still growing by about `{python} fmt(gap_per_tenfold, ".1f")` points with each tenfold tightening. Alternatively, one could argue for a larger clip proportionate to benchmarks' resolutions based on their question counts. (FrontierMath Tier 4 has `{python} st.fm4_questions` questions.)]
 
-To be clear, though, Fable 5.2 is significantly above the prediction interval with any reasonable clip. Only the magnitude is in question, and even that is fairly stable for clips near Epoch's choice of 0.1%.
+Whether the jump lands outside the trend's 90% prediction interval also depends on the clip. With Epoch's 0.1% clip, Fable 5.2 sits just inside the interval's upper edge, as in [Epoch's chart](https://x.com/EpochAIResearch/status/2119903415363113088). With a 0.01% clip or tighter, it lands above the interval. That said, the size of the jump is fairly stable for clips near Epoch's choice of 0.1%.
 
 ```{python}
 #| output: asis
@@ -151,7 +155,8 @@ print(plotly_js())
 #| label: fig-gap
 #| fig-cap: "Claude Fable 5.2's ECI from a full refit using the given clip, minus that fit's own trend prediction at Fable 5.2's release date. Each line is one fit's reasoning-era frontier trend (best reasoning models on release, o1-mini through Claude Fable 5.1, as in [Epoch's chart](https://x.com/EpochAIResearch/status/2119903415363113088)), with its 90% prediction interval shaded. The extended-support beta (XB, described below) gap rounds to the 1% clip’s."
 # Each fit's trend line, relative to its own prediction at Fable 5.2's release (fable_gap_lines.csv: days from that
-# release, the line, and the 90% prediction interval's half-width). Solid through Fable 5.1, the last model in the trend.
+# release, the line, and the 90% prediction interval's edges lo and hi relative to the line, computed as Epoch's
+# ribbon is: see prediction_band in scripts/clip_trend_gap.py). Solid through Fable 5.1, the last model in the trend.
 GAP_FITS = [("clip_0.01", 0.01, "1% clip (and XB)"), ("clip_0.001", 0.001, "0.1% clip (Epoch’s)"),
             ("clip_0.0001", 0.0001, "0.01% clip"), ("clip_1e-06", 1e-6, "10⁻⁶ clip"), ("clip_1e-12", 1e-12, "10⁻¹² clip")]
 RELEASE = pd.Timestamp("2026-11-09")  # Fable 5.2
@@ -170,8 +175,8 @@ for source, clip, label in GAP_FITS:
 
 fig = go.Figure()
 for line, _, color, _ in drawn:  # 90% prediction bands first, so every line sits on top of every band
-    fig.add_scatter(x=line.date, y=line.y + line.half, mode="lines", line=dict(width=0), hoverinfo="skip")  # upper edge
-    fig.add_scatter(x=line.date, y=line.y - line.half, mode="lines", line=dict(width=0), fill="tonexty",  # lower edge, filled up
+    fig.add_scatter(x=line.date, y=line.y + line.hi, mode="lines", line=dict(width=0), hoverinfo="skip")  # upper edge
+    fig.add_scatter(x=line.date, y=line.y + line.lo, mode="lines", line=dict(width=0), fill="tonexty",  # lower edge, filled up
                     fillcolor=translucent(color), hoverinfo="skip")
 for line, _, color, label in drawn:
     fitted, extended = line[line.date <= FABLE51], line[line.date >= FABLE51 - pd.Timedelta(days=5)]
@@ -183,6 +188,7 @@ for _, g, color, label in drawn:  # dots on top of every line
                     marker=dict(size=12, color=color, line=dict(color="white", width=1.5)),
                     hovertemplate=(f"<b>{label}</b><br>Fable 5.2: {g['5.2_eci']:.1f}<br>trend predicts {g['5.2_pred']:.1f}"
                                    f"<br>gap {g['5.2_gap']:+.2f} (90%: {g['5.2_gap_lo']:+.1f} to {g['5.2_gap_hi']:+.1f})"
+                                   f"<br>trend’s 90% prediction interval: {g['5.2_pi_lo']:+.1f} to {g['5.2_pi_hi']:+.1f}"
                                    f"<br>trend slope {g['slope']:.1f} ECI/yr<extra></extra>"))
 # labels to the right of the dots, nudged apart where the dots are close (0.1% and 1% are 0.6 points apart)
 label_y = []
