@@ -1,9 +1,8 @@
 ---
-title: "Handling 100% scores in the Bayesian ECI without a clip"
-subtitle: "There's a simple fix for the sensitivity of Epoch's Bayesian ECI to its choice of 99.9% to represent 100% scores"
+title: "Handling 100% scores in the Bayesian ECI"
+subtitle: "A simple fix for the ECI's new sensitivity to Epoch's 99.9% clip"
 description: "Epoch's switch to a Bayesian ECI makes some results of interest depend on how benchmark scores of 0 or 1 are clipped (to 0.001 or 0.999), but extending the beta distribution to handle scores of exactly 0 or 1 provides similar results without the clip's arbitrariness."
 date: 2026-11-12
-categories: [AI, measurement]
 draft: true
 execute:
   echo: false
