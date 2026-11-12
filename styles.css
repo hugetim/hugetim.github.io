@@ -1,0 +1,7 @@
+/* Quarto 1.11's "solana" about template centers the home page photo on narrow screens, but a later rule
+   (align-items: start) overrides that; restore the centering. */
+@media (max-width: 991.98px) {
+  div.quarto-about-solana .about-entity {
+    align-items: center;
+  }
+}
