@@ -1,0 +1,19 @@
+{
+ "gamma": 4.1614070779383185,
+ "gamma_lo": 2.6120912313461306,
+ "gamma_hi": 5.810845494270321,
+ "delta_b_min": 0.00011596539124547798,
+ "delta_b_min_bench": "METR Time Horizons",
+ "delta_b_max": 0.020012685640689476,
+ "delta_b_max_bench": "Furniture Assembly",
+ "loo_diff": 14.421221400534607,
+ "loo_se": 4.500725270852998,
+ "loo_boundary": 9.244440216500173,
+ "loo_interior": 5.176781184034434,
+ "bsrmse_epoch": 0.10935769129522127,
+ "bsrmse_xb": 0.11360250901727102,
+ "bsrmse_shift": 0.11125082608403022,
+ "ppp_var_epoch": 0.567,
+ "ppp_var_xb": 0.827,
+ "ppp_var_shift": 0.77
+}

@@ -3,6 +3,7 @@ project:
   output-dir: docs
 
 website:
+  draft-mode: unlinked
   title: "Tim Huegerich – research"
   description: "Homepage of Tim Huegerich"
   navbar:
