@@ -90,9 +90,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-date','listing-title','listing-author','listing-subtitle','listing-image','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description"],
+      searchColumns: ["listing-date","listing-title","listing-author","listing-subtitle","listing-image","listing-description"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -205,7 +205,34 @@ window.Quarto = {
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-listing-date-sort="1752814800000" data-listing-file-modified-sort="1794257908013" data-listing-date-modified-sort="1753074000000" data-listing-reading-time-sort="3" data-listing-word-count-sort="433">
+<div class="quarto-post image-right" data-index="0" data-listing-date-sort="1794808800000" data-listing-file-modified-sort="1794870553440" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="29" data-listing-word-count-sort="5759">
+<div class="thumbnail"><a href="./posts/eci-clip/index.html" class="no-external-icon">
+
+<p class="card-img-top"><img loading='lazy' src="posts/eci-clip/epoch_fable_trend.png" alt="Scatter plot of models' ECI against release date, with a trend line through the frontier reasoning models and a shaded band around it. Claude Fable 5.2, at 174, is above the line, at the top edge of the band."  class="thumbnail-image card-img"/></p>
+
+</a></div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./posts/eci-clip/index.html" class="no-external-icon">Handling 100% scores in the Bayesian ECI</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./posts/eci-clip/index.html" class="no-external-icon">A simple fix for the ECI’s new sensitivity to Epoch’s 99.9% clip</a>
+</div>
+<div class="listing-description">
+<a href="./posts/eci-clip/index.html" class="no-external-icon">
+<p>Epoch’s switch to a Bayesian ECI makes some results of interest depend on how benchmark scores of 0 or 1 are clipped (to 0.001 or 0.999), but extending the beta distribution to handle scores of exactly 0 or 1 provides similar results without the clip’s arbitrariness.</p>
+</a>
+</div>
+</div>
+<div class="metadata">
+<a href="./posts/eci-clip/index.html" class="no-external-icon">
+<div class="listing-date">
+Nov 16, 2026
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="1" data-listing-date-sort="1752814800000" data-listing-file-modified-sort="1794257908013" data-listing-date-modified-sort="1753074000000" data-listing-reading-time-sort="3" data-listing-word-count-sort="433">
 <div class="thumbnail"><a href="./posts/wi-imm-arrests/index.html" class="no-external-icon">
 
 <img loading="lazy" src="./posts/wi-imm-arrests/wisconsin.png" class="thumbnail-image">
