@@ -46,7 +46,7 @@
     "href": "blog.html",
     "title": "data blog",
     "section": "",
-    "text": "Handling 100% scores in the Bayesian ECI\n\n\nA simple fix for the ECI’s new sensitivity to Epoch’s 99.9% clip\n\n\n\nEpoch’s switch to a Bayesian ECI makes some results of interest depend on how benchmark scores of 0 or 1 are clipped (to 0.001 or 0.999), but extending the beta distribution to handle scores of exactly 0 or 1 provides similar results without the clip’s arbitrariness.\n\n\n\n\n\n\nNov 16, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nWisconsin Immigration Arrests\n\n\n\n\n\n\n\n\n\n\nJul 18, 2025\n\n\n\n\n\nNo matching items\n Back to top"
+    "text": "Handling 100% scores in the Bayesian ECI\n\n\nA simple fix for the ECI’s new sensitivity to Epoch’s 99.9% clip\n\n\n\nEpoch’s switch to a Bayesian ECI makes some results of interest depend on how benchmark scores of 0 or 1 are clipped (to 0.001 or 0.999), but extending the beta distribution to handle scores of exactly 0 or 1 provides similar results without the clip’s arbitrariness.\n\n\n\n\n\n\nNov 12, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nWisconsin Immigration Arrests\n\n\n\n\n\n\n\n\n\n\nJul 18, 2025\n\n\n\n\n\nNo matching items\n Back to top"
   },
   {
     "objectID": "code.html",

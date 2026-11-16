@@ -2,7 +2,9 @@
 title: "Handling 100% scores in the Bayesian ECI"
 subtitle: "A simple fix for the ECI's new sensitivity to Epoch's 99.9% clip"
 description: "Epoch's switch to a Bayesian ECI makes some results of interest depend on how benchmark scores of 0 or 1 are clipped (to 0.001 or 0.999), but extending the beta distribution to handle scores of exactly 0 or 1 provides similar results without the clip's arbitrariness."
-date: 2026-11-16
+date: 2026-11-12
+image: featured.png
+image-alt: "How far Claude Fable 5.2 sits above the reasoning-era frontier trend under each clip: from +3.4 ECI points at a 1% clip to +6.8 at 10⁻¹²."
 draft: false
 toc: true
 execute:
@@ -196,14 +198,16 @@ for _, g, _, label in drawn:
     label_y.append(max(y, label_y[-1] + 0.8) if label_y else y)
     fig.add_annotation(x=RELEASE + pd.Timedelta(days=8), y=label_y[-1], text=f"{y:+.1f}  {label}", showarrow=False,
                        xanchor="left", font=dict(size=12))
+fig.add_annotation(x=RELEASE + pd.Timedelta(days=8), y=label_y[-1] + 0.6, yanchor="bottom", xanchor="left", align="left",
+                   showarrow=False, font=dict(size=12), text="<b>Alternative<br>Fable 5.2 ECIs</b>")  # what the dots are
 slopes = gap.loc[[s for s, _, _ in GAP_FITS], "slope"]
 fig.add_annotation(x=pd.Timestamp("2026-03-10"), y=-1.6, xanchor="left", align="left", showarrow=False, font=dict(size=12),
                    text=f"Reasoning-era frontier trend, refit under each clip<br>(+{slopes.min():.1f} to +{slopes.max():.1f} ECI/yr; fit through Fable 5.1)")
 fig.add_vline(x=RELEASE, line=dict(color=MUTED, width=1))
 fig.add_hline(y=0, line=dict(color=MUTED, width=1, dash="dot"))
-style(fig, 460, xaxis=dict(range=[pd.Timestamp("2026-03-01"), pd.Timestamp("2027-03-20")],
+style(fig, 460, xaxis=dict(range=[pd.Timestamp("2026-03-01"), pd.Timestamp("2027-01-25")],  # just room for the labels at the post's 805px
                            tickvals=pd.date_range("2026-03-01", "2026-11-01", freq="2MS"), tickformat="%b %Y"),
-      yaxis=dict(range=[-9.5, 8.5], tickvals=list(range(-8, 9, 2)),
+      yaxis=dict(range=[-9.5, 10], tickvals=list(range(-8, 9, 2)),
                  ticktext=[f"{v:+d}".replace("-", "−") if v else "0" for v in range(-8, 9, 2)],
                  title="ECI points above the trend’s prediction"))
 show(fig)
