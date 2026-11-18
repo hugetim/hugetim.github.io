@@ -1,0 +1,63 @@
+benchmark,display,slug,short
+ANLI,ANLI,adversarial-nli,ANLI
+APEX-Agents,APEX-Agents,apex-agents,APEX-Agents
+ARC AI2,ARC (AI2),arc-ai2,ARC (AI2)
+ARC-AGI,ARC-AGI,arc-agi,ARC-AGI
+ARC-AGI-2,ARC-AGI-2,arc-agi-2,ARC-AGI-2
+Aider polyglot,Aider Polyglot,aider-polyglot,Aider Polyglot
+BBH,BBH,bbh,BBH
+Balrog,BALROG,balrog,BALROG
+CL-bench,CL-bench,cl-bench,CL-bench
+CL-bench Life,CL-bench Life,cl-bench-life,CL-bench Life
+CadEval,CadEval,cad-eval,CadEval
+Chess Puzzles,Chess Puzzles,chess-puzzles,Chess Puzzles
+Cybench,Cybench,cybench,Cybench
+DTBench,DTBench,dtbench,DTBench
+DeepResearch Bench,DeepResearch Bench,deepresearchbench,DeepResearch
+DeepSWE,DeepSWE,deepswe,DeepSWE
+EBR-bench,EBR-bench,ebr-bench,EBR-bench
+ExploitBench,ExploitBench,exploitbench,ExploitBench
+Fiction.LiveBench,Fiction.LiveBench,fictionlivebench,Fiction.Live
+FrontierCode,FrontierCode,frontiercode,FrontierCode
+FrontierMath-2025-02-28-Private,FrontierMath Tiers 1–3 (v1),frontiermath-tiers-1-3-v2,FrMath T1–3 (v1)
+FrontierMath-Tier-4-2025-07-01-Private,FrontierMath Tier 4 (v1),frontiermath-tier-4-v2,FrMath T4 (v1)
+FrontierMath-Tier-4-v2-Private,FrontierMath Tier 4,frontiermath-tier-4-v2,FrMath T4
+FrontierMath-Tiers-1-3-v2-Private,FrontierMath Tiers 1–3,frontiermath-tiers-1-3-v2,FrMath T1–3
+FrontierSWE,FrontierSWE,frontierswe,FrontierSWE
+Furniture Assembly,Furniture Assembly,furniture-assembly,Furniture
+GDPval,GDPval,gdpval,GDPval
+GPQA diamond,GPQA Diamond,gpqa-diamond,GPQA Diamond
+GSM8K,GSM8K,gsm8k,GSM8K
+GSO-Bench,GSO-Bench,gso,GSO-Bench
+GeoBench,GeoBench,geobench,GeoBench
+HLE,Humanity's Last Exam,hle,HLE
+HellaSwag,HellaSwag,hella-swag,HellaSwag
+LAMBADA,LAMBADA,lambada,LAMBADA
+LMCA,LMCA,lmca,LMCA
+Lech Mazur Writing,Lech Mazur Writing,lech-mazur-writing,Mazur Writing
+MATH level 5,MATH Level 5,math-level-5,MATH Level 5
+METR Time Horizons,METR Time Horizons,metr-time-horizons,METR horizons
+MMLU,MMLU,mmlu,MMLU
+MirrorCode,MirrorCode,mirrorcode,MirrorCode
+Mystery Game Puzzles,Mystery Game Puzzles,mystery-game-puzzles,Mystery Game
+OSWorld,OSWorld,os-world,OSWorld
+OSWorld 2.0,OSWorld 2.0,osworld-2,OSWorld 2.0
+OTIS Mock AIME 2024-2025,OTIS Mock AIME,otis-mock-aime-2024-2025,OTIS Mock AIME
+OpenBookQA,OpenBookQA,open-book-qa,OpenBookQA
+PIQA,PIQA,piqa,PIQA
+PostTrainBench,PostTrainBench,post-train-bench,PostTrainBench
+ProofBench,ProofBench,proofbench,ProofBench
+Remote Labor Index,Remote Labor Index,rli,RLI
+SWE-Bench verified,SWE-bench Verified,swe-bench-verified,SWE-bench V
+ScienceQA,ScienceQA,science-qa,ScienceQA
+SimpleBench,SimpleBench,simplebench,SimpleBench
+SimpleQA Verified,SimpleQA Verified,simple-qa-verified,SimpleQA V
+SpireClimb,SpireClimb,spireclimb,SpireClimb
+Surface Evolver Bench,Surface Evolver Bench,surface-evolver-bench,Surface Evolver
+Terminal Bench,Terminal-Bench,terminal-bench,Terminal-Bench
+The Agent Company,TheAgentCompany,the-agent-company,TheAgentCompany
+TriviaQA,TriviaQA,trivia-qa,TriviaQA
+VPCT,VPCT,vpct,VPCT
+WeirdML,WeirdML,weirdml,WeirdML
+Winogrande,WinoGrande,wino-grande,WinoGrande
+WeirdML v3,WeirdML v3,weirdml-v3,WeirdML v3

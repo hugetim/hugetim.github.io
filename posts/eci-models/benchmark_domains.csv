@@ -1,0 +1,62 @@
+benchmark,epoch_key,epoch_title,slug,category,domains,evaluator
+ANLI,adversarial-nli,Adversarial NLI,adversarial-nli,,Language understanding,model-developer
+APEX-Agents,apex-agents,APEX-Agents,apex-agents,Agents,Agent,benchmark-creator
+ARC AI2,arc-ai2,ARC AI2,arc-ai2,,Science; World knowledge,model-developer
+ARC-AGI,arc-agi,ARC-AGI-1,arc-agi,,Conceptual reasoning,benchmark-creator
+ARC-AGI-2,arc-agi-2,ARC-AGI-2,arc-agi-2,,Conceptual reasoning,benchmark-creator
+Aider polyglot,aider-polyglot,Aider Polyglot,aider-polyglot,Coding,Software engineering,benchmark-creator
+BBH,bbh,BBH,bbh,,Conceptual reasoning,model-developer
+Balrog,balrog,BALROG,balrog,Agents,Games; Long context,benchmark-creator
+CL-bench,cl-bench,CL-bench,cl-bench,Miscellaneous,Long context,benchmark-creator
+CL-bench Life,cl-bench-life,CL-bench Life,cl-bench-life,Miscellaneous,Long context,benchmark-creator
+CadEval,cad-eval,CadEval,cad-eval,,Multimodal,benchmark-creator
+Chess Puzzles,chess-puzzles,Chess Puzzles,chess-puzzles,,Games,epoch-ai
+Cybench,cybench,Cybench,cybench,,Software engineering,model-developer
+DTBench,dtbench,DTBench,dtbench,Miscellaneous,Conceptual reasoning,benchmark-creator
+DeepResearch Bench,deepresearchbench,DeepResearchBench,deepresearchbench,Agents,Long context,benchmark-creator
+DeepSWE,deepswe,DeepSWE v1.1,deepswe,Coding,Software engineering; Agent,benchmark-creator
+EBR-bench,ebr-bench,Earthborne Rangers (EBR-bench),ebr-bench,,Games; Agent,epoch-ai
+ExploitBench,exploitbench,ExploitBench v0.1,exploitbench,Agents,Software engineering; Agent,benchmark-creator
+Fiction.LiveBench,fictionlivebench,Fiction.liveBench,fictionlivebench,Miscellaneous,Long context; Writing & creativity,benchmark-creator
+FrontierCode,frontiercode,FrontierCode,frontiercode,Coding,Software engineering; Agent,benchmark-creator
+FrontierMath-2025-02-28-Private,frontiermath-tiers-1-3-v1,"FrontierMath Tiers 1-3 (v1, old)",frontiermath-tiers-1-3-v1,Math and science,Mathematics; Agent,epoch-ai
+FrontierMath-Tier-4-2025-07-01-Private,frontiermath-tier-4-v1,"FrontierMath Tier 4 (v1, old)",frontiermath-tier-4-v1,Math and science,Mathematics; Agent,epoch-ai
+FrontierMath-Tier-4-v2-Private,frontiermath-tier-4-v2,FrontierMath Tier 4 (v2),frontiermath-tier-4-v2,Math and science,Mathematics; Agent,epoch-ai
+FrontierMath-Tiers-1-3-v2-Private,frontiermath-tiers-1-3-v2,FrontierMath Tiers 1-3 (v2),frontiermath-tiers-1-3-v2,Math and science,Mathematics; Agent,epoch-ai
+FrontierSWE,frontierswe,FrontierSWE (v2),frontierswe,Coding,Software engineering; Agent,benchmark-creator
+Furniture Assembly,furniture-assembly,Furniture Assembly Benchmark,furniture-assembly,Multimodal,Multimodal; Conceptual reasoning; Agent,epoch-ai
+GDPval,gdpval,GDPval,gdpval,,Agent,benchmark-creator
+GPQA diamond,gpqa-diamond,GPQA Diamond,gpqa-diamond,Math and science,Science,epoch-ai
+GSM8K,gsm8k,GSM8K,gsm8k,,Mathematics,model-developer
+GSO-Bench,gso,GSO,gso,Agents,Software engineering,benchmark-creator
+GeoBench,geobench,GeoBench,geobench,Multimodal,Multimodal; Games,benchmark-creator
+HLE,hle,Humanity's Last Exam,hle,Math and science,Science,benchmark-creator
+HellaSwag,hella-swag,HellaSwag,hella-swag,,Language understanding,model-developer
+LAMBADA,lambada,LAMBADA,lambada,,Language understanding,model-developer
+LMCA,lmca,LMCA,lmca,Miscellaneous,Conceptual reasoning,benchmark-creator
+Lech Mazur Writing,lech-mazur-writing,Lech Mazur Writing,lech-mazur-writing,,Writing & creativity,benchmark-creator
+MATH level 5,math-level-5,MATH Level 5,math-level-5,Math and science,Mathematics,epoch-ai
+METR Time Horizons,metr-time-horizons,METR Time Horizons,metr-time-horizons,Agents,Software engineering; Long context,benchmark-creator
+MMLU,mmlu,MMLU,mmlu,,World knowledge,model-developer
+MirrorCode,mirrorcode,MirrorCode,mirrorcode,Coding,Software engineering; Agent,epoch-ai
+Mystery Game Puzzles,mystery-game-puzzles,Mystery Game Puzzles,mystery-game-puzzles,,Games,epoch-ai
+OSWorld,os-world,OS World,os-world,,Computer use; Agent,benchmark-creator
+OSWorld 2.0,osworld-2,OSWorld 2.0,osworld-2,Agents,Computer use; Agent,benchmark-creator
+OTIS Mock AIME 2024-2025,otis-mock-aime-2024-2025,OTIS Mock AIME 2024-2025,otis-mock-aime-2024-2025,Math and science,Mathematics,epoch-ai
+OpenBookQA,open-book-qa,OpenBookQA,open-book-qa,,Science; World knowledge,model-developer
+PIQA,piqa,PIQA,piqa,,Language understanding,model-developer
+PostTrainBench,post-train-bench,PostTrainBench v1.1,post-train-bench,Agents,Software engineering; Agent,benchmark-creator
+ProofBench,proofbench,ProofBench,proofbench,Math and science,Mathematics; Agent,benchmark-creator
+Remote Labor Index,rli,Remote Labor Index,rli,Agents,Agent,benchmark-creator
+SWE-Bench verified,swe-bench-verified,SWE-bench Verified,swe-bench-verified,Coding,Software engineering; Agent,epoch-ai
+ScienceQA,science-qa,ScienceQA,science-qa,,Science; Multimodal,model-developer
+SimpleBench,simplebench,SimpleBench,simplebench,Miscellaneous,Conceptual reasoning,benchmark-creator
+SimpleQA Verified,simple-qa-verified,SimpleQA Verified,simple-qa-verified,,World knowledge,epoch-ai
+Surface Evolver Bench,surface-evolver-bench,Surface Evolver Bench,surface-evolver-bench,Coding,Science; Software engineering; Agent,benchmark-creator
+Terminal Bench,terminalbench,Terminal-Bench 2.0,terminal-bench,Agents,Software engineering,benchmark-creator
+The Agent Company,the-agent-company,The Agent Company,the-agent-company,,Agent,benchmark-creator
+TriviaQA,trivia-qa,TriviaQA,trivia-qa,,World knowledge,model-developer
+VPCT,vpct,VPCT,vpct,Multimodal,Multimodal; Science,benchmark-creator
+WeirdML,weirdml,WeirdML (v2),weirdml,Coding,Software engineering,benchmark-creator
+Winogrande,wino-grande,WinoGrande,wino-grande,,Language understanding,model-developer
+SpireClimb,spireclimb,SpireClimb,spireclimb,Agents,Games,epoch-ai

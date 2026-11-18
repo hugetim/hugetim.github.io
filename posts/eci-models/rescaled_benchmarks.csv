@@ -1,0 +1,21 @@
+benchmark,random_baseline,score_ceiling
+GPQA diamond,0.25,0.97
+FrontierMath-2025-02-28-Private,0.0,0.57
+FrontierMath-Tier-4-2025-07-01-Private,0.0,0.6
+FrontierMath-Tiers-1-3-v2-Private,0.0,0.95
+Chess Puzzles,0.0496,1.0
+Mystery Game Puzzles,0.0922,1.0
+ANLI,0.3333333333333333,1.0
+ARC AI2,0.25,1.0
+BBH,0.25,1.0
+HellaSwag,0.25,1.0
+MMLU,0.25,1.0
+OpenBookQA,0.25,1.0
+PIQA,0.5,1.0
+SimpleBench,0.1666666666666666,1.0
+VPCT,0.3333333333333333,1.0
+Winogrande,0.5,1.0
+LMCA,0.0,0.85
+DTBench,0.4,1.0
+Furniture Assembly,0.3,1.0
+WeirdML v3,0.0,0.9
