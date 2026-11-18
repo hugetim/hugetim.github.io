@@ -8,6 +8,7 @@ execute:
   warning: false
 resources:
   - eci_model_panels.html
+date-modified: 2026-11-18
 ---
 
 ```{python}
