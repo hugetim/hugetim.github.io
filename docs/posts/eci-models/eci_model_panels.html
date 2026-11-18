@@ -67,8 +67,10 @@ function fill(s,d){[['Frontier',FR],['Near-frontier at release',NR]].forEach(([t
  ns.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=lab(n,d);og.appendChild(o);});s.appendChild(og);});}
 function fillAll(){sel.innerHTML='';sel2.innerHTML='<option value="">(none)</option>';fill(sel,true);fill(sel2,false);}
 fillAll();
-function scoreText(b,p){if(!adj(b))return `scored ${pct(p)}`;
- const raw=b.rb+p*(b.c-b.rb);let s=`Epoch-adjusted score ${pct(p)} (raw ${p<=0.0011?'at or below '+pct(b.rb):p>=0.9989&&b.c<1?'at or above '+pct(b.c):pct(raw)}`;
+/* Epoch view of the full chart: name Epoch's 0.1%-99.9% clip next to a score it moves (Tim, Nov 18); XCI 0.1 doesn't clip */
+const clipNote=p=>SIMPLE||MX?'':p>0.999+1e-9?' (clipped to 99.9%)':p<0.001-1e-9?' (clipped to 0.1%)':'';
+function scoreText(b,p){if(!adj(b))return `scored ${pct(p)}${clipNote(p)}`;
+ const raw=b.rb+p*(b.c-b.rb);let s=`Epoch-adjusted score ${pct(p)}${clipNote(p)} (raw ${p<=0.0011?'at or below '+pct(b.rb):p>=0.9989&&b.c<1?'at or above '+pct(b.c):pct(raw)}`;
  const parts=[];if(b.rb>0)parts.push(`random guessing ${pct(b.rb)} counts as 0%`);if(b.c<1)parts.push(`${pct(b.c)} counts as 100%`);return s+'; '+parts.join(', ')+')';}
 function dotText(n,bn,v){const b=B[bn],p=v[2],e=dotE(b,v);
  if(SIMPLE)return `<b>${n}</b> \u00b7 ${b.name}<br>${scoreText(b,p)}<br>${IMPL?'implies ECI':'on the benchmark\u2019s curve at ECI'} ${e.toFixed(1)}${p<=0.0011||p>=0.9989?(IMPL?' (as clipped by Epoch)':' (Epoch\u2019s clip)'):''}`;
