@@ -90,7 +90,8 @@ function render(shown){const ms=shown.map(n=>DATA[n]),two=ms.length>1;
   X0=Math.floor((lo-2)/5)*5;X1=Math.ceil((hi+2)/5)*5;}
  const byB={};ms.forEach((m,k)=>m.rows.forEach(r=>{(byB[r[0]]=byB[r[0]]||[null,null])[k]=r;}));
  const mE=bn=>{const v=byB[bn].filter(Boolean).map(r=>dotE(B[bn],r));return v.reduce((s,x)=>s+x,0)/v.length;};
- const rows=Object.keys(byB).sort(ORDER==='difficulty'?(a,b)=>B[a].D-B[b].D:(a,b)=>mE(a)-mE(b));/* y counts up, so the hardest benchmark (difficulty order) or the one whose scores imply the highest ECI (averaged over the models shown) ends up at the top */
+ const DD=bn=>(EB[bn]||B[bn]).D;/* difficulty order: Epoch's D_b in both views, so rows stay put when toggling to XCI 0.1 (Tim, Nov 18) */
+ const rows=Object.keys(byB).sort(ORDER==='difficulty'?(a,b)=>DD(a)-DD(b):(a,b)=>mE(a)-mE(b));/* y counts up, so the hardest benchmark (difficulty order) or the one whose scores imply the highest ECI (averaged over the models shown) ends up at the top */
  const n=rows.length,W=document.getElementById('plot').clientWidth,narrow=W<700,y=i=>i,txt=css('--text-secondary'),mut=css('--text-muted'),grid=css('--border');
  const rx=[],ry=[],lx=[],ly=[],tx=[],ty=[],tw=[],hx=[],hy=[],ht=[];
  rows.forEach((bn,i)=>{const b=B[bn],e1=!SIMPLE&&b.t?b.t[0]:eAt(b,PLO),e9=!SIMPLE&&b.t?b.t[10]:eAt(b,PHI),top=[],bot=[],N=b.rib?b.rib.length-1:RIB_N;
@@ -150,7 +151,7 @@ sel.addEventListener('change',renderAll);sel2.addEventListener('change',renderAl
 const step=d=>{const c=sel.value,i=FR.indexOf(c);let j;
  if(i>=0)j=Math.min(FR.length-1,Math.max(0,i+d));
  else{const dt=DATA[c].date;j=d>0?FR.findIndex(n=>DATA[n].date>dt):FR.length-1-[...FR].reverse().findIndex(n=>DATA[n].date<=dt);if(j<0||j>=FR.length)j=d>0?FR.length-1:0;}
- sel.value=FR[j];renderAll();};
+ sel.value=FR[j];sel2.value=j>0?FR[j-1]:'';renderAll();};/* arrows also compare with the previous frontier model (Tim, Nov 18) */
 document.getElementById('prev').onclick=()=>step(-1);document.getElementById('next').onclick=()=>step(1);
 let q=new URLSearchParams(location.search);try{const ps=new URLSearchParams(parent.location.search);if(ps.get('m'))q=ps;}catch(e){}
 if(SIMPLE||PAIR.length){document.querySelector('.ctl').style.display=SIMPLE?'none':'';document.querySelector('.ctl2').style.display=SIMPLE?'none':'';q=new URLSearchParams({m:PAIR[0],c:PAIR[1]});}
