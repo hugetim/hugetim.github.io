@@ -2,6 +2,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/eci-models/index.html",
       "/posts/eci-clip/index.html",
       "/posts/wi-imm-arrests/index.html"
     ]

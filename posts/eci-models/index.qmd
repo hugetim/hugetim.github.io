@@ -2,15 +2,12 @@
 title: "Decomposing the Epoch Capabilities Index"
 subtitle: "ECI visualized as a weighted average of benchmarks"
 date: 2026-11-17
-draft: true
+draft: false
 execute:
   echo: false
   warning: false
 resources:
   - eci_model_panels.html
-include-in-header:
-  text: |
-    <meta name="robots" content="noindex">
 ---
 
 ```{python}
