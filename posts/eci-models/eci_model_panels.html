@@ -85,8 +85,11 @@ function header(shown){const two=shown.length>1;document.getElementById('hdr').i
  document.getElementById('legend').innerHTML=`<span><svg width="26" height="12"><path d="M1 6 Q13 -2 25 6 Q13 14 1 6Z" fill="${GREEN}"/></svg>Benchmark weight curve (${MX?'0%\u2013100%':'0.1%\u201399.9%'} score)</span>`+shown.map((n,k)=>sw(COL[k],two?n:'implied ECI (dot) \u00b7 ECI (dashed) \u00b7 weight share (bar)')).join('');}
 function render(shown){const ms=shown.map(n=>DATA[n]),two=ms.length>1;
  {/* ECI axis: just the span of the shown models' dots and ECIs, within 30 points of their ECIs; padded, on a 5-point grid */
-  const mid=ms.reduce((a,m)=>a+m.eci,0)/ms.length,v=[...ms.map(m=>m.eci),...ms.flatMap(m=>m.rows.map(r=>dotE(B[r[0]],r)))];
-  const lo=Math.max(Math.min(...v),mid-30),hi=Math.min(Math.max(...v),mid+30);
+  /* the union of the ranges both methods need (Epoch ECI and XCI 0.1), so the axis doesn't change when toggling (Tim, Nov 18) */
+  let lo=Infinity,hi=-Infinity;
+  [[EDATA,EB],[XDATA,XB]].forEach(([D,BB])=>{if(!D)return;const mm=shown.map(n=>D[n]).filter(Boolean);if(!mm.length)return;
+   const mid=mm.reduce((a,m)=>a+m.eci,0)/mm.length,v=[...mm.map(m=>m.eci),...mm.flatMap(m=>m.rows.map(r=>dotE(BB[r[0]],r)))];
+   lo=Math.min(lo,Math.max(Math.min(...v),mid-30));hi=Math.max(hi,Math.min(Math.max(...v),mid+30));});
   X0=Math.floor((lo-2)/5)*5;X1=Math.ceil((hi+2)/5)*5;}
  const byB={};ms.forEach((m,k)=>m.rows.forEach(r=>{(byB[r[0]]=byB[r[0]]||[null,null])[k]=r;}));
  const mE=bn=>{const v=byB[bn].filter(Boolean).map(r=>dotE(B[bn],r));return v.reduce((s,x)=>s+x,0)/v.length;};
