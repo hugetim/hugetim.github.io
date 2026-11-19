@@ -95,9 +95,19 @@ def covc(a, b):  # column-wise covariance over draws
 
 
 ii = w.model.map(Mi).to_numpy(); jj = w.benchmark.map(Bi).to_numpy()
+# Anchor models (their XCI is fixed in every draw): minus the change, read off a line fitted to every other model's
+# change against its XCI, at the anchor's XCI (as in scripts/eci_full_weights.py). Per draw, that is minus a fixed
+# linear combination L of the other models' XCIs, so the same covariance / reweighting code applies to it.
+anc = E.std(0) < 1e-9
+Xo = np.column_stack([np.ones((~anc).sum()), E[:, ~anc].mean(0)])
+P = np.linalg.pinv(Xo)                                   # 2 x others: least-squares coefficients from others' changes
+is_anc = anc[ii]
 full_w, full_se, ess = np.full(len(w), np.nan), np.full(len(w), np.nan), np.full(len(w), np.nan)
 for ch in np.array_split(np.arange(len(w)), max(1, len(w) // 200)):
-    Ei = E[:, ii[ch]]
+    Ei = E[:, ii[ch]].copy()
+    for c_, n in enumerate(ch):
+        if is_anc[n]:                                    # minus the fitted line at the anchor's XCI, per draw
+            Ei[:, c_] = -(E[:, ~anc] @ (np.array([1.0, E[0, ii[n]]]) @ P))
     ci, cb = ch[inner[ch]], ch[~inner[ch]]
     if len(ci):
         k = inner[ch]
@@ -114,5 +124,5 @@ for ch in np.array_split(np.arange(len(w)), max(1, len(w) // 200)):
         dist = target[cb] - w.reading_ECI.to_numpy()[cb]
         full_w[cb] = dE(slice(None)) / dist
         full_se[cb] = np.std([dE(b) for b in blocks], axis=0, ddof=1) / 2 / np.abs(dist)
-pd.DataFrame(dict(model=w.model, benchmark=w.benchmark, full_w=full_w, full_se=full_se, ess=ess)).to_csv(
+pd.DataFrame(dict(model=w.model, benchmark=w.benchmark, full_w=full_w, full_se=full_se, ess=ess, anchor=is_anc.astype(int))).to_csv(
     "eci_full_weights_xci.csv", index=False)

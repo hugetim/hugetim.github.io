@@ -58,5 +58,21 @@ def cov(a, b):
 est = cov(Ei, g)
 blocks = np.array_split(np.arange(E.shape[0]), 4)
 se = np.std([cov(Ei[b], g[b]) for b in blocks], axis=0, ddof=1) / 2
-rows = pd.DataFrame(dict(model=w.model, benchmark=w.benchmark, full_w=est, full_se=se))
+# Anchor models (Tim, Nov 19): their ECI is fixed in every draw (Claude 3.5 Sonnet 130, GPT-5 150), so a change in
+# one of their scores moves the other models instead, by an affine rescaling of the scale plus each model's own small
+# effects. Fitting a line to the other models' changes against their ECIs and reading it at the anchor's ECI gives
+# the change of a model sitting where the anchor is; the anchor's weight is minus that: how much it rises relative
+# to models at its own level.
+anchor = E.std(0) < 1e-9
+others = ~anchor
+w_anchor = anchor[i]
+X = np.column_stack([np.ones(others.sum()), E[:, others].mean(0)])
+for n in np.where(w_anchor)[0]:
+    Eo, x0 = E[:, others], np.array([1.0, E[0, i[n]]])
+    def c_o(ix):
+        ck = ((Eo[ix] - Eo[ix].mean(0)) * (g[ix, n] - g[ix, n].mean())[:, None]).mean(0)  # each other model's change
+        return -x0 @ np.linalg.lstsq(X, ck, rcond=None)[0]
+    est[n] = c_o(slice(None))
+    se[n] = np.std([c_o(b) for b in blocks], ddof=1) / 2
+rows = pd.DataFrame(dict(model=w.model, benchmark=w.benchmark, full_w=est, full_se=se, anchor=w_anchor.astype(int)))
 rows.to_csv("eci_full_weights.csv", index=False)
