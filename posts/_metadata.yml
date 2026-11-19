@@ -16,5 +16,5 @@ format:
         repo-id: "R_kgDOPPEwVQ"
         category: "Blog Comments"
         category-id: "DIC_kwDOPPEwVc4DLgtY"
-        mapping: url
+        mapping: pathname
         loading: lazy  # documented by Quarto, but ignored as of Quarto 1.11.9 (its giscus template has no loading attribute)
