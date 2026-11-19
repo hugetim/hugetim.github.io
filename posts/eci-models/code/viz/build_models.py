@@ -139,6 +139,9 @@ if not PAIR and os.path.exists(_xw) and os.path.exists(_xc):
     sys.path.insert(0, os.path.join(HERE, "..", "scripts"))
     from xci_weights import fisher_curve, readings as xci_readings
     xw = pd.read_csv(_xw, parse_dates=["date"], dtype={"bound": str})
+    if os.path.exists("eci_full_weights_xci.csv"):  # XCI 0.1's full-refit weights (scripts/xci_full_weights.py): ticks
+        xw = xw.merge(pd.read_csv("eci_full_weights_xci.csv")[["model", "benchmark", "full_w", "full_se"]],
+                      on=["model", "benchmark"], how="left")
     xc = pd.read_csv(_xc).set_index("benchmark")
     xci_ci = pd.read_csv(os.path.join(DATA, "xci_01", "eci.csv")).set_index("Model")
     xm = xw.groupby("model").agg(ECI=("ECI", "first"), date=("date", "first")).reset_index()
@@ -314,8 +317,8 @@ function render(shown){const ms=shown.map(n=>DATA[n]),two=ms.length>1;
   rows.forEach((bn,i)=>{const v=byB[bn][k];if(!v)return;const b=B[bn],e=dotE(b,v),t=dotText(shown[k],bn,v),inR=e>=X0&&e<=X1,xe=Math.min(X1-.8,Math.max(X0+.8,e));
    if(v[5]&&inR&&!SIMPLE){const q=K[v[5]];q.x.push(e);q.y.push(i+off[k]);q.t.push(t);if(v[4]>=X0&&v[4]<=X1){OX.push(v[4]);OY.push(i+off[k]);OT.push(t);}}/* XCI 0.1's 0% / 100%: a bracket at the end of the ECIs the score is consistent with */
    else{X.push(xe);Y.push(i+off[k]);S.push(e<X0?'triangle-left':e>X1?'triangle-right':'circle');T.push(t);}
-   const hasF=v.length>6,bt=`<b>${shown[k]}</b> \\u00b7 ${b.name}<br>Weight: ${wpc(v[1])}`+(hasF?`<br>Full refit impact: ${Math.round(v[6]*100)}% (\\u00b1 ${Math.max(1,Math.round(2*v[7]*100))}%) of this score\\u2019s implied ${VAL()} change`:'');
-   BX.push(v[1]);BY.push(i+off[k]);BT.push(bt);BL.push(wpc(v[1]));if(hasF){const y0=i+off[k],h=two?.13:.2,e=.1,lo=two?(k===0?y0-h:y0-h-e):y0-h-e,hi=two?(k===0?y0+h+e:y0+h):y0+h+e;FX.push(v[6],v[6],null);FY.push(lo,hi,null);}});
+   const hasF=v.length>6,bt=`<b>${shown[k]}</b> \\u00b7 ${b.name}<br>Weight: ${wpc(v[1])}`+(hasF?`<br>Full refit impact: ${Math.round(v[6]*100)}% (\\u00b1 ${Math.max(1,Math.round(2*v[7]*100))}%) of `+(v[5]?`a ${v[5]==='1'?'fall':'rise'} from circle to 1 ${VAL()} pt. ${v[5]==='1'?'below':'above'} bracket`:`this score\\u2019s implied ${VAL()} change`):'');
+   BX.push(v[1]);BY.push(i+off[k]);BT.push(bt);BL.push(wpc(v[1]));if(hasF){const y0=i+off[k],h=two?.13:.2,e=.1,lo=two?(k===0?y0-h:y0-h-e):y0-h-e,hi=two?(k===0?y0+h+e:y0+h):y0+h+e;const fx=Math.max(0,v[6]);FX.push(fx,fx,null);/* a negative refit weight (within noise of 0) gets its tick at 0; its hover text keeps the value (Tim, Nov 19) */FY.push(lo,hi,null);}});
   tr.push({x:X,y:Y,type:'scatter',mode:'markers',marker:{color:COL[k],size:9,symbol:S,line:{color:css('--surface-2')||'#fff',width:1.2}},text:T,hovertemplate:'%{text}<extra></extra>',name:shown[k]});
   /* the bracket's stroke sits on the line's end: Plotly sets text ~4px off its point, so shift it back by that much (Tim, Nov 19) */
   const u1=(X1-X0)/((W-(narrow?118:210))*(two?(narrow?.5:.6):(narrow?.72:.8)));

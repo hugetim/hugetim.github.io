@@ -58,19 +58,23 @@ for f in ("eci_benchmark_weights_xci.csv", "benchmark_curves_xci.csv"):  # never
     if os.path.exists(os.path.join(BUILD, f)):
         os.replace(os.path.join(BUILD, f), os.path.join(BUILD, f + ".old"))
 xci = ["scripts/xci_weights.py"] if os.path.exists(os.path.join(XCI, "draws.npz")) else []
+# XCI 0.1's full-refit weights (Nov 19, 2026): the ticks in the XCI view, from the XCI fit's draws (needs xci_weights.py's output)
+xfull = ["scripts/xci_full_weights.py"] if xci else []
+if os.path.exists(os.path.join(BUILD, "eci_full_weights_xci.csv")):  # never stale ticks from older data
+    os.replace(os.path.join(BUILD, "eci_full_weights_xci.csv"), os.path.join(BUILD, "eci_full_weights_xci.csv.old"))
 env["ECI_PANEL_ORDER"] = "custom"  # Tim, Nov 18: rows in viz/benchmark_order.csv (related benchmarks grouped; was difficulty, Nov 17)
 # Full-refit weights (Nov 19, 2026): the ticks on post 1A's weight bars, from our fit's posterior draws
 full = ["scripts/eci_full_weights.py"] if BETA and os.path.exists(os.path.join(BAYES, "draws.npz")) else []
 if os.path.exists(os.path.join(BUILD, "eci_full_weights.csv")):  # never stale ticks from older data
     os.replace(os.path.join(BUILD, "eci_full_weights.csv"), os.path.join(BUILD, "eci_full_weights.csv.old"))
-for cmd in [weights] + full + xci + ["viz/build_viz.py", "viz/build_models.py", "scripts/unit_meaning.py"]:
+for cmd in [weights] + full + xci + xfull + ["viz/build_viz.py", "viz/build_models.py", "scripts/unit_meaning.py"]:
     subprocess.run([sys.executable, "-W", "ignore", os.path.join(ROOT, cmd)], cwd=BUILD, env=env, check=True, stdout=subprocess.DEVNULL)
 # The code behind post 1A's chart goes into the post's folder too (Tim, Nov 19, 2026: any code used to make a post that
 # is not in its .qmd or in a separate repo is published with it), under its paths in this repo.
 # Not included, being available elsewhere (Tim): the daily updater, and the fits (Epoch's model, scripts/bayes_eci.py:
 # github.com/hugetim/eci-clip-replication; XCI v0.1: github.com/hugetim/xci).
 CODE_1A = ["posts/eci_assets.py", "scripts/eci_weights_beta.py", "scripts/eci_full_weights.py", "scripts/xci_weights.py",
-           "scripts/median_beta.py", "scripts/xb_kappa.py", "viz/build_models.py", "viz/_style.py",
+           "scripts/median_beta.py", "scripts/logit_beta.py", "scripts/xb_kappa.py", "scripts/xci_full_weights.py", "viz/build_models.py", "viz/_style.py",
            "viz/benchmark_order.csv", "viz/epoch_benchmark_pages.csv"]
 for f in CODE_1A:
     os.makedirs(os.path.join(A, "code", os.path.dirname(f)), exist_ok=True)
