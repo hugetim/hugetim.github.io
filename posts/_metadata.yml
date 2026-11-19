@@ -13,3 +13,7 @@ format:
     comments:
       giscus:
         repo: hugetim/hugetim.github.io
+        repo-id: "R_kgDOPPEwVQ"
+        category: "Blog Comments"
+        category-id: "DIC_kwDOPPEwVc4DLgtY"
+        mapping: url
