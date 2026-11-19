@@ -84,7 +84,7 @@ function header(shown){const two=shown.length>1;document.getElementById('hdr').i
  const sw=(c,l)=>`<span><svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="${c}"/></svg><svg width="10" height="12"><line x1="5" y1="0" x2="5" y2="12" stroke="${c}" stroke-width="1.5" stroke-dasharray="3 2"/></svg><span style="width:12px;height:7px;border-radius:2px;background:${c}"></span>${l}</span>`;
  if(SIMPLE){const sw2=(c,l)=>`<span><svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="${c}"/></svg><svg width="10" height="12"><line x1="5" y1="0" x2="5" y2="12" stroke="${c}" stroke-width="1.5" stroke-dasharray="3 2"/></svg>${l}</span>`;
   document.getElementById('legend').innerHTML=`<span><svg width="30" height="12"><line x1="1" y1="6" x2="29" y2="6" stroke="${GREEN}"/><line x1="8" y1="3" x2="8" y2="9" stroke="${DARKG}"/><line x1="15" y1="1" x2="15" y2="11" stroke="${DARKG}"/><line x1="22" y1="3" x2="22" y2="9" stroke="${DARKG}"/></svg>Benchmark scale${IMPL?': the ECI each score implies,':''} from 0.1% to 99.9% (Epoch\u2019s clip), with ticks at 10%, 20%, \u2026, 90% (long tick: 50%)</span>`+shown.map((n,k)=>sw2(COL[k],n+': score on the scale (dot), ECI (dashed)')).join('');return;}
- document.getElementById('legend').innerHTML=`<span><svg width="26" height="12"><path d="M1 6 Q13 -2 25 6 Q13 14 1 6Z" fill="${GREEN}"/></svg>Benchmark weight curve (${MX?'0%\u2013100%':'0.1%\u201399.9%'} score)</span>`+shown.map((n,k)=>sw(COL[k],two?n:'implied ECI (dot) \u00b7 ECI (dashed) \u00b7 weight share (bar)')).join('');}
+ document.getElementById('legend').innerHTML=`<span><svg width="26" height="12"><path d="M1 6 Q13 -2 25 6 Q13 14 1 6Z" fill="${GREEN}"/></svg>Benchmark weight curve</span>`+shown.map((n,k)=>sw(COL[k],two?n:'implied ECI (dot) \u00b7 ECI (dashed) \u00b7 weight share (bar)')).join('');}
 function render(shown){const ms=shown.map(n=>DATA[n]),two=ms.length>1;
  {/* ECI axis: just the span of the shown models' dots and ECIs, within 30 points of their ECIs; padded, on a 5-point grid */
   /* the union of the ranges both methods need (Epoch ECI and XCI 0.1), so the axis doesn't change when toggling (Tim, Nov 18) */
@@ -104,7 +104,8 @@ function render(shown){const ms=shown.map(n=>DATA[n]),two=ms.length>1;
   [...top,...bot,top[0]].forEach(([a,c])=>{rx.push(a);ry.push(c);});rx.push(null);ry.push(null);
   if(SIMPLE){const c0=tickE(b,0),c9=tickE(b,10);lx.push(c0,c9,null);ly.push(i,i,null);}/* simple: the scale runs to Epoch's clip, 0.1%-99.9%, with no end caps (Tim's choice) */
   else{const l0=b.t?tickE(b,0):e1,l1=b.t?tickE(b,10):e9;lx.push(l0,l1,null);ly.push(i,i,null);}/* the line runs to where a 0.1% and a 99.9% score imply (XCI: 0% and 100%; Tim, Nov 18); the weight shape spans the same range; the line shows where it gets too thin to see */
-  for(let q=1;q<=9;q++){const e=(SIMPLE||b.t)?tickE(b,q):eAt(b,q/10),t=q===5?.22:.11;tx.push(e,e,null);ty.push(i-t,i+t,null);}
+  /* XCI 0.1: also ticks at 0% and 100% (the line's ends), which it scores as such; Epoch's line ends at its 0.1% / 99.9% clip, unticked (Tim, Nov 19) */
+  for(let q=MX&&!SIMPLE&&b.t?0:1;q<=(MX&&!SIMPLE&&b.t?10:9);q++){const e=(SIMPLE||b.t)?tickE(b,q):eAt(b,q/10),t=q===5?.22:.11;tx.push(e,e,null);ty.push(i-t,i+t,null);}
   hx.push(b.D);hy.push(i);ht.push(`<b>${b.name}</b>${adj(b)?' \u2020':''}<br>`+(SIMPLE&&IMPL?`a 50% score implies ECI ${b.D.toFixed(0)}; 10% and 90% imply ${b.t[1].toFixed(0)} and ${b.t[9].toFixed(0)}`:`half solved at ECI ${b.D.toFixed(0)}; 10%\u219290% from ${eAt(b,.1).toFixed(0)} to ${eAt(b,.9).toFixed(0)}`));});
  const tr=[{x:rx,y:ry,type:'scatter',mode:'lines',fill:'toself',fillcolor:GREEN,opacity:.85,line:{width:0},hoverinfo:'skip',visible:!SIMPLE},
   {x:lx,y:ly,type:'scatter',mode:'lines',line:{color:GREEN,width:1},opacity:SIMPLE?.6:.85,hoverinfo:'skip'},/* full chart: the shape's opacity, so line and shape read as one */
@@ -112,19 +113,24 @@ function render(shown){const ms=shown.map(n=>DATA[n]),two=ms.length>1;
   {x:hx,y:hy,type:'scatter',mode:'markers',marker:{size:14,opacity:0},text:ht,hovertemplate:'%{text}<extra></extra>'}];
  const off=two?[.14,-.14]:[0];
  const wmax=Math.max(...ms.flatMap(m=>m.rows.map(r=>Math.max(r[1],r.length>6?r[6]:0))));
- ms.forEach((m,k)=>{const X=[],Y=[],S=[],T=[],BX=[],BY=[],BT=[],BL=[],FX=[],FY=[],FT=[],LX=[],K={'0':{x:[],y:[],t:[]},'1':{x:[],y:[],t:[]}};
+ ms.forEach((m,k)=>{const X=[],Y=[],S=[],T=[],BX=[],BY=[],BT=[],BL=[],FX=[],FY=[],K={'0':{x:[],y:[],t:[]},'1':{x:[],y:[],t:[]}};
   rows.forEach((bn,i)=>{const v=byB[bn][k];if(!v)return;const b=B[bn],e=dotE(b,v),t=dotText(shown[k],bn,v),inR=e>=X0&&e<=X1,xe=Math.min(X1-.8,Math.max(X0+.8,e));
    if(v[5]&&inR&&!SIMPLE){const q=K[v[5]];q.x.push(e);q.y.push(i+off[k]);q.t.push(t);}/* XCI 0.1's 0% / 100%: a bracket at the end of the ECIs the score is consistent with */
    else{X.push(xe);Y.push(i+off[k]);S.push(e<X0?'triangle-left':e>X1?'triangle-right':'circle');T.push(t);}
    const hasF=v.length>6,bt=`<b>${shown[k]}</b> \u00b7 ${b.name}<br>Weight: ${wpc(v[1])}`+(hasF?`<br>Full refit impact: ${Math.round(v[6]*100)}% (\u00b1 ${Math.max(1,Math.round(2*v[7]*100))}%) of this score\u2019s implied ECI change`:'');
-   BX.push(v[1]);BY.push(i+off[k]);BT.push(bt);BL.push(wpc(v[1]));if(hasF){FX.push(v[6]);FY.push(i+off[k]);FT.push(bt);}LX.push(Math.max(v[1],hasF?v[6]:0));});
+   BX.push(v[1]);BY.push(i+off[k]);BT.push(bt);BL.push(wpc(v[1]));if(hasF){const y0=i+off[k],h=two?.13:.2,e=.1,lo=two?(k===0?y0-h:y0-h-e):y0-h-e,hi=two?(k===0?y0+h+e:y0+h):y0+h+e;FX.push(v[6],v[6],null);FY.push(lo,hi,null);}});
   tr.push({x:X,y:Y,type:'scatter',mode:'markers',marker:{color:COL[k],size:9,symbol:S,line:{color:css('--surface-2')||'#fff',width:1.2}},text:T,hovertemplate:'%{text}<extra></extra>',name:shown[k]});
-  [['1','['],['0',']']].forEach(([bd,g])=>{const q=K[bd];if(q.x.length)tr.push({x:q.x,y:q.y,type:'scatter',mode:'markers+text',marker:{size:2,opacity:0},
-   text:q.x.map(()=>g),textposition:bd==='1'?'middle right':'middle left',textfont:{color:COL[k],size:17,family:'system-ui,sans-serif'},hovertext:q.t,hovertemplate:'%{hovertext}<extra></extra>',name:shown[k]});});
+  /* the bracket's stroke sits on the line's end: Plotly sets text ~4px off its point, so shift it back by that much (Tim, Nov 19) */
+  const u1=(X1-X0)/((W-(narrow?118:210))*(two?(narrow?.5:.6):(narrow?.72:.8)));
+  [['1','['],['0',']']].forEach(([bd,g])=>{const q=K[bd];if(q.x.length)tr.push({x:q.x.map(x=>x+(bd==='1'?-1:1)*3.5*u1),y:q.y,type:'scatter',mode:'markers+text',marker:{size:2,opacity:0},
+   text:q.x.map(()=>'<b>'+g+'</b>'),textposition:bd==='1'?'middle right':'middle left',textfont:{color:COL[k],size:14,family:'system-ui,sans-serif'},hovertext:q.t,hovertemplate:'%{hovertext}<extra></extra>',hoverlabel:{bgcolor:COL[k]},name:shown[k]});});
   if(!SIMPLE){tr.push({x:BX,y:BY,xaxis:'x2',type:'bar',orientation:'h',width:two?.26:.4,marker:{color:COL[k]},cliponaxis:false,hovertext:BT,hovertemplate:'%{hovertext}<extra></extra>',name:shown[k]});
-   /* full-refit weight: a tick on the bar (Tim, Nov 19); the % label goes past the bar or the tick, whichever is longer */
-   if(FX.length)tr.push({x:FX,y:FY,xaxis:'x2',type:'scatter',mode:'markers',marker:{symbol:'line-ns-open',size:two?11:15,line:{width:2.5,color:txt}},cliponaxis:false,hovertext:FT,hovertemplate:'%{hovertext}<extra></extra>',name:shown[k]});
-   tr.push({x:LX.map(x=>x+wmax*.03),y:BY,xaxis:'x2',type:'scatter',mode:'text',text:BL,textposition:'middle right',textfont:{size:11,color:txt},cliponaxis:false,hoverinfo:'skip',name:shown[k]});}
+   /* full-refit weight: a faint tick on the bar (Tim, Nov 19), drawn under the bar's % label, which stays at the bar's end */
+   /* two models: each tick sticks out only on its own bar's outer side, so the two never overlap (Tim, Nov 19) */
+   if(FX.length)tr.push({x:FX,y:FY,xaxis:'x2',type:'scatter',mode:'lines',line:{width:2.5,color:txt},opacity:.3,cliponaxis:false,hoverinfo:'skip',name:shown[k]});
+   /* the number's hover point sits at the middle of the number (not its left edge), so it doesn't take the hover from the other model's bar (Tim, Nov 19) */
+   const d2=two?(narrow?[.53,.72]:[.62,.77]):(narrow?[.76,.96]:[.82,1]),u=wmax*1.6/((W-(narrow?118:210))*(d2[1]-d2[0]));
+   tr.push({x:BX.map((x,j)=>x+u*(3+2.7*BL[j].length)),y:BY,xaxis:'x2',type:'scatter',mode:'text',text:BL,textposition:'middle center',textfont:{size:9,color:txt},cliponaxis:false,hovertext:BT,hovertemplate:'%{hovertext}<extra></extra>',hoverlabel:{bgcolor:COL[k]},name:shown[k]});}
   if(SIMPLE){const SX=[],SY=[],ST=[],SH=[];rows.forEach((bn,i)=>{const v=byB[bn][k];if(!v)return;const o=byB[bn][1-k],hiK=o&&v[2]>o[2];
     SX.push(k);SY.push(i);ST.push((hiK?'<b>':'')+pct(v[2])+(hiK?'</b>':''));SH.push(dotText(shown[k],bn,v));});
    tr.push({x:SX,y:SY,xaxis:'x4',type:'scatter',mode:'text',text:ST,textfont:{color:COL[k],size:narrow?11:12.5},hovertext:SH,hovertemplate:'%{hovertext}<extra></extra>'});}});
@@ -133,21 +139,21 @@ function render(shown){const ms=shown.map(n=>DATA[n]),two=ms.length>1;
   rows.forEach((bn,i)=>{const v=byB[bn],b=B[bn],part=k=>v[k]?v[k][1]*(v[k][4]-avg):0,c=part(0)-part(1);/* v[4]: the reading the weighted average uses */
    const line=k=>v[k]?`${shown[k]}: ${wpc(v[k][1])} weight × (${v[k][5]?'counted as':'implied'} ${v[k][4].toFixed(1)} − midpoint ${avg.toFixed(1)}) = ${(part(k)>=0?'+':'')+part(k).toFixed(2)}`:`${shown[k]}: not scored`;
    CX.push(c);CY.push(i);CC.push(COL[c>=0?0:1]);CL.push(Math.abs(c)<.05?'':(c>0?'+':'')+c.toFixed(1));
-   CT.push(`<b>${b.name}</b>: ${(c>=0?'+':'')+c.toFixed(2)} ${VAL()} toward ${shown[c>=0?0:1]}<br>${line(0)}<br>${line(1)}<br>(${shown[0]}'s term minus ${shown[1]}'s)`);});
+   CT.push(`<b>${b.name}</b>: ${(c>=0?'+':'')+c.toFixed(2)} ${VAL()} toward ${shown[c>=0?0:1]}<br>${line(0)}<br>${line(1)}`);});
   cmax=Math.max(.5,...CX.map(Math.abs));
   tr.push({x:CX,y:CY,xaxis:'x3',type:'bar',orientation:'h',width:.5,marker:{color:CC},text:CL,textposition:'outside',textfont:{size:11,color:txt},cliponaxis:false,hovertext:CT,hovertemplate:'%{hovertext}<extra></extra>'});}
  const shapes=ms.map((m,k)=>({type:'line',xref:'x',yref:'y',x0:m.eci,x1:m.eci,y0:-.6,y1:n-.4,line:{color:COL[k],width:1.5,dash:'dot'}}));
  const tick=rows.map(bn=>{const b=B[bn];return `<a href="${b.url}" target="_blank">${narrow?b.short:b.name}${adj(b)?' \u2020':''}</a>`;});
  const lay={height:n*24+70+(SIMPLE?16:0),margin:{l:narrow?96:200,r:narrow?22:10,t:SIMPLE?26:10,b:40},showlegend:false,hovermode:'closest',paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
-  font:{family:'system-ui,sans-serif',size:narrow?10.5:11.5,color:txt},shapes,dragmode:'zoom',
-  xaxis:{domain:SIMPLE?(narrow?[.38,1]:[.25,1]):two?(narrow?[0,.5]:[0,.6]):(narrow?[0,.72]:[0,.8]),range:[X0,X1],dtick:X1-X0<=30?5:10,gridcolor:grid,zeroline:false,title:{text:'ECI',font:{size:11,color:mut}},tickfont:{color:mut}},
+  font:{family:'system-ui,sans-serif',size:narrow?10.5:11.5,color:txt},shapes,dragmode:false,
+  xaxis:{fixedrange:true,domain:SIMPLE?(narrow?[.38,1]:[.25,1]):two?(narrow?[0,.5]:[0,.6]):(narrow?[0,.72]:[0,.8]),range:[X0,X1],dtick:X1-X0<=30?5:10,gridcolor:grid,zeroline:false,title:{text:'ECI',font:{size:11,color:mut}},tickfont:{color:mut}},
   xaxis2:{visible:!SIMPLE,domain:two?(narrow?[.53,.72]:[.62,.77]):(narrow?[.76,.96]:[.82,1]),range:[0,wmax*1.6],showgrid:false,showticklabels:false,zeroline:false,fixedrange:true,title:{text:'weight',font:{size:11,color:mut}}},
   xaxis4:{domain:narrow?[0,.36]:[0,.22],range:[-.65,1.65],visible:false,fixedrange:true},
   annotations:SIMPLE?shown.map((nm,k)=>({xref:'x4',yref:'paper',x:k,y:1,yanchor:'bottom',showarrow:false,text:'<b>'+(LABELS[k]||nm)+'</b>',font:{color:COL[k],size:narrow?10.5:11.5}})):[],
   xaxis3:{domain:narrow?[.78,.97]:[.81,1],range:[-cmax*1.5,cmax*1.5],visible:two&&!SIMPLE,showgrid:false,showticklabels:false,zeroline:true,zerolinecolor:mut,fixedrange:true,title:{text:'share of gap',font:{size:11,color:mut}}},
-  yaxis:{tickvals:rows.map((_,i)=>i),ticktext:tick,range:[-.7,n-.3],showgrid:false,zeroline:false,fixedrange:true,ticks:'',...(SIMPLE?{anchor:'free',position:0}:{})},
+  yaxis:{fixedrange:true,tickvals:rows.map((_,i)=>i),ticktext:tick,range:[-.7,n-.3],showgrid:false,zeroline:false,fixedrange:true,ticks:'',...(SIMPLE?{anchor:'free',position:0}:{})},
   hoverlabel:{align:'left',font:{size:12}}};
- Plotly.newPlot('plot',tr,lay,{displaylogo:false,responsive:true,modeBarButtons:[['zoom2d','pan2d','resetScale2d']]});
+ Plotly.newPlot('plot',tr,lay,{displaylogo:false,responsive:true,displayModeBar:false});
  /* hovering a benchmark name shows its parameters (Tim, Nov 17): a native tooltip on each y-axis label */
  document.querySelectorAll('#plot .ytick text').forEach((el,i)=>{const b=B[rows[i]];if(!b)return;
   const p=[`D = ${b.D.toFixed(1)}`,`\u03b1 = ${b.a.toFixed(3)}`];if(b.s!=null)p.push(`\u03c3 = ${b.s.toFixed(3)}`);if(b.tau!=null)p.push(`\u03c4 = ${b.tau.toFixed(2)}`);
