@@ -11,6 +11,5 @@ format:
   html:
     code-tools: true
     comments:
-      hypothesis:
-        showHighlights: whenSidebarOpen
-        enableExperimentalNewNoteButton: true
+      giscus:
+        repo: hugetim/hugetim.github.io
