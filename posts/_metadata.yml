@@ -17,3 +17,4 @@ format:
         category: "Blog Comments"
         category-id: "DIC_kwDOPPEwVc4DLgtY"
         mapping: url
+        loading: lazy
