@@ -232,7 +232,7 @@ button{font-size:14px;padding:2px 10px}
 <div id="hdr"></div>
 <div id="plot"></div>
 <p id="info" style="font-size:13px;color:var(--text-secondary);min-height:40px">Hover over or tap a dot for the score behind it; click a benchmark name for Epoch's page on it.</p>
-<p class="foot" id="xnote" style="display:none">Under XCI v0.1, a score of 0% or 100% doesn&#39;t point to a single ECI: the higher a model&#39;s capability, the likelier a perfect score, without limit. So instead of a dot, a 100% score gets a bracket, [, at the ECI that a score just short of 100% would imply, meaning &ldquo;at least this&rdquo;; a 0% score gets ], meaning &ldquo;at most this&rdquo;. In the weighted average, such a score is still counted, at a reading somewhat beyond the model&#39;s ECI in the score&#39;s direction; hover over it to see that reading and its weight.</p>
+<p class="foot" id="xnote" style="display:none">Under XCI v0.1, a score of 0% or 100% doesn&#39;t point to a single XCI: the higher a model&#39;s capability, the likelier a perfect score, without limit. So instead of a dot, a 100% score gets a bracket, [, at the XCI that a score just short of 100% would imply, meaning &ldquo;at least this&rdquo;; a 0% score gets ], meaning &ldquo;at most this&rdquo;. In the weighted average, such a score is still counted, at a reading beyond the model&#39;s XCI in the score&#39;s direction, marked by an open circle.</p>
 <p class="foot">&dagger; Epoch rescales this benchmark's scores before fitting: random guessing counts as 0% and, for some, a maximum below 100% counts as 100%. Scores here are the rescaled ones; hover a dot for the raw score. Data: <a href="https://epoch.ai/benchmarks" target="_blank" style="color:inherit">Epoch AI Benchmarking Hub</a><span id="pub">, ECI as published</span>__ASOF__.</p>
 <script>__PLOTLY__</script>
 <script>
@@ -271,8 +271,8 @@ function scoreText(b,p){if(!adj(b))return `scored ${pct(p)}${clipNote(p)}`;
  const parts=[];if(b.rb>0)parts.push(`random guessing ${pct(b.rb)} counts as 0%`);if(b.c<1)parts.push(`${pct(b.c)} counts as 100%`);return s+'; '+parts.join(', ')+')';}
 function dotText(n,bn,v){const b=B[bn],p=v[2],e=dotE(b,v);
  if(SIMPLE)return `<b>${n}</b> \\u00b7 ${b.name}<br>${scoreText(b,p)}<br>${IMPL?'implies ECI':'on the benchmark\\u2019s curve at ECI'} ${e.toFixed(1)}${p<=0.0011||p>=0.9989?(IMPL?' (as clipped by Epoch)':' (Epoch\\u2019s clip)'):''}`;
- if(v[5])return `<b>${n}</b> \\u00b7 ${b.name}<br>${scoreText(b,p)}<br>implied ECI ${v[5]==='1'?'at least':'at most'} ${e.toFixed(1)}; counted as ${v[4].toFixed(1)}`;
- return `<b>${n}</b> \\u00b7 ${b.name}<br>${scoreText(b,p)}<br>implied ECI ${p<=0.0011?'below '+e.toFixed(0):p>=0.9989?'above '+e.toFixed(0):e.toFixed(1)}`;}
+ if(v[5])return `<b>${n}</b> \\u00b7 ${b.name}<br>${scoreText(b,p)}<br>implied ${VAL()} ${v[5]==='1'?'at least':'at most'} ${e.toFixed(1)}; counted as ${v[4].toFixed(1)}`;
+ return `<b>${n}</b> \\u00b7 ${b.name}<br>${scoreText(b,p)}<br>implied ${VAL()} ${p<=0.0011?'below '+e.toFixed(0):p>=0.9989?'above '+e.toFixed(0):e.toFixed(1)}`;}
 /* posterior probability that the first model's ECI is higher than the second's (PH: the shown method's pairwise table) */
 function pHigher(a,b){const T=MX?XPH:EPH;if(!T||!T.names)return '';const i=T.names.indexOf(a),j=T.names.indexOf(b);if(i<0||j<0)return '';
  const p=T.P[i][j];return ` (P(first model higher) ${p>=.995?'> 99%':p<=.005?'< 1%':'= '+Math.round(p*100)+'%'})`;}
@@ -281,13 +281,13 @@ function header(shown){const two=shown.length>1;document.getElementById('hdr').i
  const sw=(c,l)=>`<span><svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="${c}"/></svg><svg width="10" height="12"><line x1="5" y1="0" x2="5" y2="12" stroke="${c}" stroke-width="1.5" stroke-dasharray="3 2"/></svg><span style="width:12px;height:7px;border-radius:2px;background:${c}"></span>${l}</span>`;
  if(SIMPLE){const sw2=(c,l)=>`<span><svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="${c}"/></svg><svg width="10" height="12"><line x1="5" y1="0" x2="5" y2="12" stroke="${c}" stroke-width="1.5" stroke-dasharray="3 2"/></svg>${l}</span>`;
   document.getElementById('legend').innerHTML=`<span><svg width="30" height="12"><line x1="1" y1="6" x2="29" y2="6" stroke="${GREEN}"/><line x1="8" y1="3" x2="8" y2="9" stroke="${DARKG}"/><line x1="15" y1="1" x2="15" y2="11" stroke="${DARKG}"/><line x1="22" y1="3" x2="22" y2="9" stroke="${DARKG}"/></svg>Benchmark scale${IMPL?': the ECI each score implies,':''} from 0.1% to 99.9% (Epoch\\u2019s clip), with ticks at 10%, 20%, \\u2026, 90% (long tick: 50%)</span>`+shown.map((n,k)=>sw2(COL[k],n+': score on the scale (dot), ECI (dashed)')).join('');return;}
- document.getElementById('legend').innerHTML=`<span><svg width="26" height="12"><path d="M1 6 Q13 -2 25 6 Q13 14 1 6Z" fill="${GREEN}"/></svg>Benchmark weight curve</span>`+shown.map((n,k)=>sw(COL[k],two?n:'implied ECI (dot) \\u00b7 ECI (dashed) \\u00b7 weight share (bar)')).join('');}
+ document.getElementById('legend').innerHTML=`<span><svg width="26" height="12"><path d="M1 6 Q13 -2 25 6 Q13 14 1 6Z" fill="${GREEN}"/></svg>Benchmark weight curve</span>`+shown.map((n,k)=>sw(COL[k],two?n:`implied ${VAL()} (dot) \\u00b7 ${VAL()} (dashed) \\u00b7 weight share (bar)`)).join('');}
 function render(shown){const ms=shown.map(n=>DATA[n]),two=ms.length>1;
  {/* ECI axis: just the span of the shown models' dots and ECIs, within 30 points of their ECIs; padded, on a 5-point grid */
   /* the union of the ranges both methods need (Epoch ECI and XCI 0.1), so the axis doesn't change when toggling (Tim, Nov 18) */
   let lo=Infinity,hi=-Infinity;
   [[EDATA,EB],[XDATA,XB]].forEach(([D,BB])=>{if(!D)return;const mm=shown.map(n=>D[n]).filter(Boolean);if(!mm.length)return;
-   const mid=mm.reduce((a,m)=>a+m.eci,0)/mm.length,v=[...mm.map(m=>m.eci),...mm.flatMap(m=>m.rows.map(r=>dotE(BB[r[0]],r)))];
+   const mid=mm.reduce((a,m)=>a+m.eci,0)/mm.length,v=[...mm.map(m=>m.eci),...mm.flatMap(m=>m.rows.map(r=>dotE(BB[r[0]],r))),...mm.flatMap(m=>m.rows.filter(r=>r[5]).map(r=>r[4]))];/* XCI 0.1: the open circles too (Tim, Nov 19) */
    lo=Math.min(lo,Math.max(Math.min(...v),mid-30));hi=Math.max(hi,Math.min(Math.max(...v),mid+30));});
   X0=Math.floor((lo-2)/5)*5;X1=Math.ceil((hi+2)/5)*5;}
  const byB={};ms.forEach((m,k)=>m.rows.forEach(r=>{(byB[r[0]]=byB[r[0]]||[null,null])[k]=r;}));
@@ -303,31 +303,33 @@ function render(shown){const ms=shown.map(n=>DATA[n]),two=ms.length>1;
   else{const l0=b.t?tickE(b,0):e1,l1=b.t?tickE(b,10):e9;lx.push(l0,l1,null);ly.push(i,i,null);}/* the line runs to where a 0.1% and a 99.9% score imply (XCI: 0% and 100%; Tim, Nov 18); the weight shape spans the same range; the line shows where it gets too thin to see */
   /* XCI 0.1: also ticks at 0% and 100% (the line's ends), which it scores as such; Epoch's line ends at its 0.1% / 99.9% clip, unticked (Tim, Nov 19) */
   for(let q=MX&&!SIMPLE&&b.t?0:1;q<=(MX&&!SIMPLE&&b.t?10:9);q++){const e=(SIMPLE||b.t)?tickE(b,q):eAt(b,q/10),t=q===5?.22:.11;tx.push(e,e,null);ty.push(i-t,i+t,null);}
-  hx.push(b.D);hy.push(i);ht.push(`<b>${b.name}</b>${adj(b)?' \\u2020':''}<br>`+(SIMPLE&&IMPL?`a 50% score implies ECI ${b.D.toFixed(0)}; 10% and 90% imply ${b.t[1].toFixed(0)} and ${b.t[9].toFixed(0)}`:`half solved at ECI ${b.D.toFixed(0)}; 10%\\u219290% from ${eAt(b,.1).toFixed(0)} to ${eAt(b,.9).toFixed(0)}`));});
+  hx.push(b.D);hy.push(i);ht.push(`<b>${b.name}</b>${adj(b)?' \\u2020':''}<br>`+(SIMPLE&&IMPL?`a 50% score implies ECI ${b.D.toFixed(0)}; 10% and 90% imply ${b.t[1].toFixed(0)} and ${b.t[9].toFixed(0)}`:`half solved at ${VAL()} ${b.D.toFixed(0)}; 10%\\u219290% from ${eAt(b,.1).toFixed(0)} to ${eAt(b,.9).toFixed(0)}`));});
  const tr=[{x:rx,y:ry,type:'scatter',mode:'lines',fill:'toself',fillcolor:GREEN,opacity:.85,line:{width:0},hoverinfo:'skip',visible:!SIMPLE},
   {x:lx,y:ly,type:'scatter',mode:'lines',line:{color:GREEN,width:1},opacity:SIMPLE?.6:.85,hoverinfo:'skip'},/* full chart: the shape's opacity, so line and shape read as one */
   {x:tx,y:ty,type:'scatter',mode:'lines',line:{color:DARKG,width:1},hoverinfo:'skip'},
   {x:hx,y:hy,type:'scatter',mode:'markers',marker:{size:14,opacity:0},text:ht,hovertemplate:'%{text}<extra></extra>'}];
  const off=two?[.14,-.14]:[0];
  const wmax=Math.max(...ms.flatMap(m=>m.rows.map(r=>Math.max(r[1],r.length>6?r[6]:0))));
- ms.forEach((m,k)=>{const X=[],Y=[],S=[],T=[],BX=[],BY=[],BT=[],BL=[],FX=[],FY=[],K={'0':{x:[],y:[],t:[]},'1':{x:[],y:[],t:[]}};
+ ms.forEach((m,k)=>{const X=[],Y=[],S=[],T=[],BX=[],BY=[],BT=[],BL=[],FX=[],FY=[],K={'0':{x:[],y:[],t:[]},'1':{x:[],y:[],t:[]}},OX=[],OY=[],OT=[];
   rows.forEach((bn,i)=>{const v=byB[bn][k];if(!v)return;const b=B[bn],e=dotE(b,v),t=dotText(shown[k],bn,v),inR=e>=X0&&e<=X1,xe=Math.min(X1-.8,Math.max(X0+.8,e));
-   if(v[5]&&inR&&!SIMPLE){const q=K[v[5]];q.x.push(e);q.y.push(i+off[k]);q.t.push(t);}/* XCI 0.1's 0% / 100%: a bracket at the end of the ECIs the score is consistent with */
+   if(v[5]&&inR&&!SIMPLE){const q=K[v[5]];q.x.push(e);q.y.push(i+off[k]);q.t.push(t);if(v[4]>=X0&&v[4]<=X1){OX.push(v[4]);OY.push(i+off[k]);OT.push(t);}}/* XCI 0.1's 0% / 100%: a bracket at the end of the ECIs the score is consistent with */
    else{X.push(xe);Y.push(i+off[k]);S.push(e<X0?'triangle-left':e>X1?'triangle-right':'circle');T.push(t);}
-   const hasF=v.length>6,bt=`<b>${shown[k]}</b> \\u00b7 ${b.name}<br>Weight: ${wpc(v[1])}`+(hasF?`<br>Full refit impact: ${Math.round(v[6]*100)}% (\\u00b1 ${Math.max(1,Math.round(2*v[7]*100))}%) of this score\\u2019s implied ECI change`:'');
+   const hasF=v.length>6,bt=`<b>${shown[k]}</b> \\u00b7 ${b.name}<br>Weight: ${wpc(v[1])}`+(hasF?`<br>Full refit impact: ${Math.round(v[6]*100)}% (\\u00b1 ${Math.max(1,Math.round(2*v[7]*100))}%) of this score\\u2019s implied ${VAL()} change`:'');
    BX.push(v[1]);BY.push(i+off[k]);BT.push(bt);BL.push(wpc(v[1]));if(hasF){const y0=i+off[k],h=two?.13:.2,e=.1,lo=two?(k===0?y0-h:y0-h-e):y0-h-e,hi=two?(k===0?y0+h+e:y0+h):y0+h+e;FX.push(v[6],v[6],null);FY.push(lo,hi,null);}});
   tr.push({x:X,y:Y,type:'scatter',mode:'markers',marker:{color:COL[k],size:9,symbol:S,line:{color:css('--surface-2')||'#fff',width:1.2}},text:T,hovertemplate:'%{text}<extra></extra>',name:shown[k]});
   /* the bracket's stroke sits on the line's end: Plotly sets text ~4px off its point, so shift it back by that much (Tim, Nov 19) */
   const u1=(X1-X0)/((W-(narrow?118:210))*(two?(narrow?.5:.6):(narrow?.72:.8)));
-  [['1','['],['0',']']].forEach(([bd,g])=>{const q=K[bd];if(q.x.length)tr.push({x:q.x.map(x=>x+(bd==='1'?-1:1)*3.5*u1),y:q.y,type:'scatter',mode:'markers+text',marker:{size:2,opacity:0},
+  [['1','['],['0',']']].forEach(([bd,g])=>{const q=K[bd];if(q.x.length)tr.push({x:q.x.map(x=>x+(bd==='1'?-1:1)*5.5*u1),y:q.y,type:'scatter',mode:'markers+text',marker:{size:2,opacity:0},
    text:q.x.map(()=>'<b>'+g+'</b>'),textposition:bd==='1'?'middle right':'middle left',textfont:{color:COL[k],size:14,family:'system-ui,sans-serif'},hovertext:q.t,hovertemplate:'%{hovertext}<extra></extra>',hoverlabel:{bgcolor:COL[k]},name:shown[k]});});
+  /* XCI 0.1's 0% / 100%: an open circle where the score is counted in the weighted average (Tim, Nov 19) */
+  if(OX.length)tr.push({x:OX,y:OY,type:'scatter',mode:'markers',marker:{symbol:'circle-open',size:7,color:COL[k],line:{width:1.5,color:COL[k]}},hovertext:OT,hovertemplate:'%{hovertext}<extra></extra>',hoverlabel:{bgcolor:COL[k]},name:shown[k]});
   if(!SIMPLE){tr.push({x:BX,y:BY,xaxis:'x2',type:'bar',orientation:'h',width:two?.26:.4,marker:{color:COL[k]},cliponaxis:false,hovertext:BT,hovertemplate:'%{hovertext}<extra></extra>',name:shown[k]});
    /* full-refit weight: a faint tick on the bar (Tim, Nov 19), drawn under the bar's % label, which stays at the bar's end */
    /* two models: each tick sticks out only on its own bar's outer side, so the two never overlap (Tim, Nov 19) */
    if(FX.length)tr.push({x:FX,y:FY,xaxis:'x2',type:'scatter',mode:'lines',line:{width:2.5,color:txt},opacity:.3,cliponaxis:false,hoverinfo:'skip',name:shown[k]});
    /* the number's hover point sits at the middle of the number (not its left edge), so it doesn't take the hover from the other model's bar (Tim, Nov 19) */
    const d2=two?(narrow?[.53,.72]:[.62,.77]):(narrow?[.76,.96]:[.82,1]),u=wmax*1.6/((W-(narrow?118:210))*(d2[1]-d2[0]));
-   tr.push({x:BX.map((x,j)=>x+u*(3+2.7*BL[j].length)),y:BY,xaxis:'x2',type:'scatter',mode:'text',text:BL,textposition:'middle center',textfont:{size:9,color:txt},cliponaxis:false,hovertext:BT,hovertemplate:'%{hovertext}<extra></extra>',hoverlabel:{bgcolor:COL[k]},name:shown[k]});}
+   tr.push({x:BX.map((x,j)=>x+u*(3+2.4*BL[j].length)),y:BY.map(y=>y+(two?(k===0?.05:-.05):0)),xaxis:'x2',type:'scatter',mode:'text',text:BL,textposition:'middle center',textfont:{size:8,color:txt},cliponaxis:false,hovertext:BT,hovertemplate:'%{hovertext}<extra></extra>',hoverlabel:{bgcolor:COL[k]},name:shown[k]});}
   if(SIMPLE){const SX=[],SY=[],ST=[],SH=[];rows.forEach((bn,i)=>{const v=byB[bn][k];if(!v)return;const o=byB[bn][1-k],hiK=o&&v[2]>o[2];
     SX.push(k);SY.push(i);ST.push((hiK?'<b>':'')+pct(v[2])+(hiK?'</b>':''));SH.push(dotText(shown[k],bn,v));});
    tr.push({x:SX,y:SY,xaxis:'x4',type:'scatter',mode:'text',text:ST,textfont:{color:COL[k],size:narrow?11:12.5},hovertext:SH,hovertemplate:'%{hovertext}<extra></extra>'});}});
@@ -343,7 +345,7 @@ function render(shown){const ms=shown.map(n=>DATA[n]),two=ms.length>1;
  const tick=rows.map(bn=>{const b=B[bn];return `<a href="${b.url}" target="_blank">${narrow?b.short:b.name}${adj(b)?' \\u2020':''}</a>`;});
  const lay={height:n*24+70+(SIMPLE?16:0),margin:{l:narrow?96:200,r:narrow?22:10,t:SIMPLE?26:10,b:40},showlegend:false,hovermode:'closest',paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
   font:{family:'system-ui,sans-serif',size:narrow?10.5:11.5,color:txt},shapes,dragmode:false,
-  xaxis:{fixedrange:true,domain:SIMPLE?(narrow?[.38,1]:[.25,1]):two?(narrow?[0,.5]:[0,.6]):(narrow?[0,.72]:[0,.8]),range:[X0,X1],dtick:X1-X0<=30?5:10,gridcolor:grid,zeroline:false,title:{text:'ECI',font:{size:11,color:mut}},tickfont:{color:mut}},
+  xaxis:{fixedrange:true,domain:SIMPLE?(narrow?[.38,1]:[.25,1]):two?(narrow?[0,.5]:[0,.6]):(narrow?[0,.72]:[0,.8]),range:[X0,X1],dtick:X1-X0<=30?5:10,gridcolor:grid,zeroline:false,title:{text:VAL(),font:{size:11,color:mut}},tickfont:{color:mut}},
   xaxis2:{visible:!SIMPLE,domain:two?(narrow?[.53,.72]:[.62,.77]):(narrow?[.76,.96]:[.82,1]),range:[0,wmax*1.6],showgrid:false,showticklabels:false,zeroline:false,fixedrange:true,title:{text:'weight',font:{size:11,color:mut}}},
   xaxis4:{domain:narrow?[0,.36]:[0,.22],range:[-.65,1.65],visible:false,fixedrange:true},
   annotations:SIMPLE?shown.map((nm,k)=>({xref:'x4',yref:'paper',x:k,y:1,yanchor:'bottom',showarrow:false,text:'<b>'+(LABELS[k]||nm)+'</b>',font:{color:COL[k],size:narrow?10.5:11.5}})):[],

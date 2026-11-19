@@ -18,8 +18,9 @@ lim_{y -> 1} chat(y) (finite, since the stretched beta puts y = 1 inside its sup
 
 Weights. Ct_m solves sum_b s_mb(Ct) = 0. Writing s_mb(Ct) = w_mb (r_mb - Ct), any positive w_mb with that r_mb makes
 Ct = sum_b w_mb r_mb / sum_b w_mb exactly. Interior: r = chat, w = s(Ct) / (chat - Ct) (exact weights, as for
-Epoch's model). 0% and 100%: w = I_b(Ct), the Fisher information one score on b carries at Ct, and r = Ct + s / w (a
-one-step reading; it lies beyond Ct in the score's direction, wherever the bracket is). I_b(C) also draws the
+Epoch's model). 0% and 100%: w = the observed information -ds/dC at Ct (Nov 19, 2026; was the Fisher information), and r = Ct + s / w
+(a Newton step; it lies beyond Ct in the score's direction), clamped so a 100% is never counted below its bracket
+(a 0% never above) and w = s / (r - Ct) then. I_b(C) also draws the
 weight ribbons in the chart (fisher_curve).
 
 Inputs (environment): ECI_DATA (an archive's epoch_capabilities_index/), ECI_XCI (the XCI 0.1 fit's folder:
@@ -163,11 +164,23 @@ def main():
     s = score_fn(y, C, *P, dl)
     gap = d.implied_ECI.to_numpy() - C
     info = fisher(C, *P, dl)
+    # 0% and 100% (Tim, Nov 19, 2026): the OBSERVED information -ds/dC at Ct (the local slope of this score's own
+    # pull), not the expected (Fisher) information, so that every weight is an observed steepness: interior scores'
+    # weights are its average between Ct and chat. Reading = Ct + s / w (a Newton step), on the score's side of Ct.
+    hh = 0.05
+    obs = -(score_fn(y, C + hh, *P, dl) - score_fn(y, C - hh, *P, dl)) / (2 * hh)
+    assert (obs[bound >= 0] > 0).all(), "non-positive observed information for a 0% or 100% score"
+    # Clamped at the bracket (Tim, Nov 19): a 100% score is never counted below its bracket (a 0% never above), so the
+    # reading never contradicts "at least / at most this"; the weight then follows from the identity, w = s / (r - Ct).
+    # (Clamping only moves r further from Ct on the score's side, so w stays positive and only shrinks.)
+    imp = d.implied_ECI.to_numpy()
+    r_b = C + s / np.where(bound >= 0, obs, 1.0)
+    r_b = np.where(bound == 1, np.maximum(r_b, imp), np.where(bound == 0, np.minimum(r_b, imp), r_b))
     exact = np.abs(gap) > 1e-7
-    w = np.where(bound >= 0, info, np.where(exact, s / np.where(exact, gap, 1.0), info))
+    w = np.where(bound >= 0, s / np.where(bound >= 0, r_b - C, 1.0), np.where(exact, s / np.where(exact, gap, 1.0), info))
     assert (w > 0).all(), "non-positive weights"
     d["w"] = w
-    d["reading_ECI"] = np.where(bound >= 0, C + s / info, d.implied_ECI)
+    d["reading_ECI"] = np.where(bound >= 0, r_b, d.implied_ECI)
     d["bound"] = np.where(bound >= 0, bound, -1)
     d["share"] = d.w / d.groupby("model").w.transform("sum")
     recon = (d.share * d.reading_ECI).groupby(d.model).sum() - d.groupby("model").Ct.first()
