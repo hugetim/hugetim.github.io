@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://hugetim.github.io/posts/wi-imm-arrests/index.html</loc>
-    <lastmod>2026-11-16T23:26:30.445Z</lastmod>
+    <loc>https://hugetim.github.io/index.html</loc>
+    <lastmod>2026-11-18T17:16:31.436Z</lastmod>
   </url>
   <url>
     <loc>https://hugetim.github.io/posts/eci-clip/index.html</loc>
-    <lastmod>2026-11-17T21:13:16.621Z</lastmod>
-  </url>
-  <url>
-    <loc>https://hugetim.github.io/code.html</loc>
-    <lastmod>2026-11-16T23:26:30.151Z</lastmod>
-  </url>
-  <url>
-    <loc>https://hugetim.github.io/blog.html</loc>
-    <lastmod>2026-11-16T23:26:30.151Z</lastmod>
-  </url>
-  <url>
-    <loc>https://hugetim.github.io/index.html</loc>
-    <lastmod>2026-11-16T23:26:30.390Z</lastmod>
+    <lastmod>2026-11-18T17:16:31.437Z</lastmod>
   </url>
   <url>
     <loc>https://hugetim.github.io/posts/eci-models/index.html</loc>
-    <lastmod>2026-11-18T06:40:37.948Z</lastmod>
+    <lastmod>2026-11-18T17:16:31.439Z</lastmod>
+  </url>
+  <url>
+    <loc>https://hugetim.github.io/blog.html</loc>
+    <lastmod>2026-11-18T17:16:31.399Z</lastmod>
+  </url>
+  <url>
+    <loc>https://hugetim.github.io/posts/wi-imm-arrests/index.html</loc>
+    <lastmod>2026-11-18T17:16:31.441Z</lastmod>
+  </url>
+  <url>
+    <loc>https://hugetim.github.io/code.html</loc>
+    <lastmod>2026-11-18T17:16:31.399Z</lastmod>
   </url>
 </urlset>
