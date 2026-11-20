@@ -199,6 +199,7 @@ FMAX = max([float(np.max(v["a"]**2 * v["k"]**2 * (_pg * (1 - _pg))**2 * (polygam
             for v in bench.values() if v["k"] > 0] or [1.0])
 _info = os.path.join(DATA, "ARCHIVE_INFO.json")
 DATA_DATE = json.load(open(_info)).get("data_date", "") if os.path.exists(_info) else ""
+PROV = json.load(open(_info)).get("provisional", 0) if os.path.exists(_info) else 0  # provisional update: our refit (Nov 20)
 PLOTLY = open(os.path.join(HERE, "vendor", "plotly-basic-2.35.2.min.js"), encoding="utf-8").read()
 
 BETA = "kappa" in bc.columns
@@ -236,10 +237,10 @@ button{font-size:14px;padding:2px 10px}
 <div id="plot"></div>
 <p id="info" style="font-size:13px;color:var(--text-secondary);min-height:40px">Hover over or tap a dot for the score behind it; click a benchmark name for Epoch's page on it.</p>
 <p class="foot" id="xnote" style="display:none">Under XCI v0.1, a score of 0% or 100% doesn&#39;t point to a single XCI: the higher a model&#39;s capability, the likelier a perfect score, without limit. So instead of a dot, a 100% score gets a bracket, [, at the XCI that a score just short of 100% would imply, meaning &ldquo;at least this&rdquo;; a 0% score gets ], meaning &ldquo;at most this&rdquo;. In the weighted average, such a score is still counted, at a reading beyond the model&#39;s XCI in the score&#39;s direction, marked by an open circle.</p>
-<p class="foot">&dagger; Epoch rescales this benchmark's scores before fitting: random guessing counts as 0% and, for some, a maximum below 100% counts as 100%. Scores here are the rescaled ones; hover a dot for the raw score. Data: <a href="https://epoch.ai/benchmarks" target="_blank" style="color:inherit">Epoch AI Benchmarking Hub</a><span id="pub">, ECI as published</span>__ASOF__.</p>
+<p class="foot">&dagger; Epoch rescales this benchmark's scores before fitting: random guessing counts as 0% and, for some, a maximum below 100% counts as 100%. Scores here are the rescaled ones; hover a dot for the raw score. Data: <a href="https://epoch.ai/benchmarks" target="_blank" style="color:inherit">Epoch AI Benchmarking Hub</a><span id="pub">, __PUB__</span>__ASOF__.</p>
 <script>__PLOTLY__</script>
 <script>
-const EDATA=__D__,EB=__B__,XDATA=__XD__,XB=__XB__,EPH=__EPH__,XPH=__XPH__,DMAX=__DMAX__,AMAX=__AMAX__,FMAX=__FMAX__,PLO=__PLO__,PHI=__PHI__,RIB_N=__RIBN__,PAIR=__PAIR__,SIMPLE=__SIMPLE__,IMPL=__IMPL__,ORDER=__ORDER__,RANK=__RANK__,LABELS=__LABELS__;
+const EDATA=__D__,EB=__B__,XDATA=__XD__,XB=__XB__,EPH=__EPH__,XPH=__XPH__,DMAX=__DMAX__,AMAX=__AMAX__,FMAX=__FMAX__,PLO=__PLO__,PHI=__PHI__,RIB_N=__RIBN__,PAIR=__PAIR__,SIMPLE=__SIMPLE__,IMPL=__IMPL__,ORDER=__ORDER__,RANK=__RANK__,PROVN=__PROVN__,LABELS=__LABELS__;
 /* MX: XCI 0.1 shown (the toggle); DATA and B are the shown method's models and benchmarks */
 let MX=false,DATA=EDATA,B=EB,names,FR,NR;const VAL=()=>MX?'XCI':'ECI';
 function lists(){names=Object.keys(DATA);FR=names.filter(n=>DATA[n].fr);NR=names.filter(n=>!DATA[n].fr).sort((a,b)=>DATA[a].date<DATA[b].date?-1:DATA[a].date>DATA[b].date?1:DATA[b].eci-DATA[a].eci);}
@@ -420,7 +421,7 @@ if ORDER == "custom":
     RANK = {b: i for i, b in enumerate(_o)}
 for k, v in {"__D__": json.dumps(data), "__B__": json.dumps(bench), "__XD__": json.dumps(XDATA), "__XB__": json.dumps(XB), "__EPH__": json.dumps(EPH), "__XPH__": json.dumps(XPH), "__DMAX__": str(DMAX), "__AMAX__": str(AMAX), "__FMAX__": repr(FMAX),
              "__PAIR__": json.dumps(PAIR), "__LABELS__": json.dumps(LABELS), "__SIMPLE__": "true" if SIMPLE else "false", "__IMPL__": "true" if RULER == "implied" else "false", "__ORDER__": json.dumps(ORDER), "__RANK__": json.dumps(RANK),
-             "__PLO__": str(P_LO), "__ASOF__": f" (data as of {pd.Timestamp(DATA_DATE):%b %-d, %Y})" if DATA_DATE else "", "__PHI__": str(P_HI), "__RIBN__": str(RIB_N)}.items():
+             "__PLO__": str(P_LO), "__PROVN__": str(int(PROV)), "__PUB__": f"provisional ECI, incl. {PROV} scores Epoch hasn&#39;t folded in yet" if PROV else "ECI as published", "__ASOF__": f" (data as of {pd.Timestamp(DATA_DATE):%b %-d, %Y})" if DATA_DATE else "", "__PHI__": str(P_HI), "__RIBN__": str(RIB_N)}.items():
     html = html.replace(k, v)
 html = html.replace("<script>__PLOTLY__</script>", "<script>" + PLOTLY.replace("</script", "<\\/script") + "</script>")
 open(OUT, "w", encoding="utf-8").write(html)
