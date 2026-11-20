@@ -1,7 +1,8 @@
 {
- "stamp": "2026-11-17_1648",
- "downloaded": "2026-11-17T16:48-06:00",
- "data_date": "2026-11-17",
- "epoch_label": "Nov. 17, 2026",
- "source": "https://epoch.ai/data/benchmark_data.zip"
+ "stamp": "2026-11-20_0654",
+ "downloaded": "2026-11-20T07:47-06:00",
+ "data_date": "2026-11-20",
+ "epoch_label": "Nov. 20, 2026",
+ "source": "https://epoch.ai/data/benchmark_data.zip",
+ "provisional": 22
 }
