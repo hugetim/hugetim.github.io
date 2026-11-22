@@ -212,7 +212,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Updated</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 21, 2026</p>
+      <p class="date-modified">November 22, 2026</p>
     </div>
   </div>
     
@@ -223,7 +223,7 @@ window.Quarto = {
 </header>
 
 
-<p>The <a href="https://epoch.ai/benchmarks/eci">Epoch Capabilities Index</a> (ECI) puts 258 AI models on a single scale. What differences in that number ultimately mean boil down to scores on 57 different benchmarks. <a href="#fig-panels" class="quarto-xref">Figure&nbsp;1</a> below shows, for any pair of frontier or near-frontier models, how benchmark scores determine their ECIs.</p>
+<p>The <a href="https://epoch.ai/benchmarks/eci">Epoch Capabilities Index</a> (ECI) puts 259 AI models on a single scale. What differences in that number ultimately mean boil down to scores on 57 different benchmarks. <a href="#fig-panels" class="quarto-xref">Figure&nbsp;1</a> below shows, for any pair of frontier or near-frontier models, how benchmark scores determine their ECIs.</p>
 <section id="sec-model" class="level2">
 <h2 class="anchored" data-anchor-id="sec-model">The math underlying the ECI</h2>
 <p>Very briefly, an AI model’s score on a given benchmark is <a href="https://epoch.ai/data/eci-documentation/methodology">modeled</a> as a function of its capability <span class="math inline">\(C_m\)</span> (also referred as its ECI): <span id="eq-eci"><span class="math display">\[
@@ -249,8 +249,8 @@ Figure&nbsp;1: ECIs as weighted averages of benchmarks. Dots are the ECIs indivi
 </figcaption>
 </figure>
 </div>
-<p>The effective number of benchmarks behind a score can be summarized as <span class="math inline">\(1 / \sum_b (\text{share}_{mb})^2\)</span>: about 7 for Claude 3.5 Sonnet and 10 for Claude Opus 5.5, whose top four benchmarks (WeirdML v3, Remote Labor Index, FrontierSWE, EBR-bench) carry 55% of the weight.</p>
-<p><em>Data: <a href="https://epoch.ai/benchmarks">Epoch AI Benchmarking Hub</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>), as of November 21, 2026.</em></p>
+<p>The effective number of benchmarks behind a score can be summarized as <span class="math inline">\(1 / \sum_b (\text{share}_{mb})^2\)</span>: about 7 for Claude 3.5 Sonnet and 10 for Claude Opus 5.5, whose top four benchmarks (WeirdML v3, Remote Labor Index, FrontierSWE, Furniture Assembly) carry 55% of the weight.</p>
+<p><em>Data: <a href="https://epoch.ai/benchmarks">Epoch AI Benchmarking Hub</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>), as of November 22, 2026.</em></p>
 <script>
 // size each embedded chart to the height it reports
 window.addEventListener('message', e => {
@@ -271,7 +271,7 @@ window.addEventListener('message', e => {
 
 <ol>
 <li id="fn1"><p>For mid-range scores this is close to inverting <a href="#eq-eci" class="quarto-xref">Equation&nbsp;1</a>, <span class="math inline">\(D_b + S^{-1}(y_{mb}) / \alpha_b\)</span> with <span class="math inline">\(S^{-1}(s) = \ln[s / (1 - s)]\)</span>. Near 0% or 100% it can differ by a few ECI points, because the assumed noise there is lopsided.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p><a href="#eq-weight" class="quarto-xref">Equation&nbsp;2</a> approximates the information a score carries about <span class="math inline">\(C_m\)</span> under Epoch’s likelihood, <span class="math inline">\([\alpha_b \hat{p}_{mb} (1 - \hat{p}_{mb})]^2 \kappa_b^2 [\psi'(\hat{p}_{mb} \kappa_b) + \psi'((1 - \hat{p}_{mb}) \kappa_b)]\)</span> with <span class="math inline">\(\kappa_b = 1 / (4 \sigma_b^2) - 1\)</span> and <span class="math inline">\(\psi'\)</span> the <a href="https://en.wikipedia.org/wiki/Trigamma_function">trigamma function</a>. The weight shares shown in <a href="#fig-panels" class="quarto-xref">Figure&nbsp;1</a> use these more exact weights, which make the weighted average the capability that best fits the model’s scores given every benchmark’s fitted curve and scatter. Not included in the calculations depicted in <a href="#fig-panels" class="quarto-xref">Figure&nbsp;1</a> is the way Epoch’s ECI also averages over uncertainty in the benchmark curves, so the two differ slightly: by 0.03 points for the median model at ECI 150 and above, and at most 0.16. (Epoch does not publish <span class="math inline">\(\sigma_b\)</span> updates, so the values here come from a refit of Epoch’s <a href="https://github.com/epoch-research/eci-public">published model code</a>, which reproduces its ECI to within sampling error.)<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p><a href="#eq-weight" class="quarto-xref">Equation&nbsp;2</a> approximates the information a score carries about <span class="math inline">\(C_m\)</span> under Epoch’s likelihood, <span class="math inline">\([\alpha_b \hat{p}_{mb} (1 - \hat{p}_{mb})]^2 \kappa_b^2 [\psi'(\hat{p}_{mb} \kappa_b) + \psi'((1 - \hat{p}_{mb}) \kappa_b)]\)</span> with <span class="math inline">\(\kappa_b = 1 / (4 \sigma_b^2) - 1\)</span> and <span class="math inline">\(\psi'\)</span> the <a href="https://en.wikipedia.org/wiki/Trigamma_function">trigamma function</a>. The weight shares shown in <a href="#fig-panels" class="quarto-xref">Figure&nbsp;1</a> use these more exact weights, which make the weighted average the capability that best fits the model’s scores given every benchmark’s fitted curve and scatter. Not included in the calculations depicted in <a href="#fig-panels" class="quarto-xref">Figure&nbsp;1</a> is the way Epoch’s ECI also averages over uncertainty in the benchmark curves, so the two differ slightly: by 0.03 points for the median model at ECI 150 and above, and at most 0.34. (Epoch does not publish <span class="math inline">\(\sigma_b\)</span> updates, so the values here come from a refit of Epoch’s <a href="https://github.com/epoch-research/eci-public">published model code</a>, which reproduces its ECI to within sampling error.)<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -840,7 +840,7 @@ window.addEventListener('message', e => {
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="an">resources:</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">  - eci_model_panels.html</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="an">date-modified:</span><span class="co"> 2026-11-21</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="an">date-modified:</span><span class="co"> 2026-11-22</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
