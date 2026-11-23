@@ -178,11 +178,20 @@ def pair_probs(names, draws):
     return {"names": names, "P": np.round(P, 3).tolist()}
 
 
+_info = os.path.join(DATA, "ARCHIVE_INFO.json")
+DATA_DATE = json.load(open(_info)).get("data_date", "") if os.path.exists(_info) else ""
+PROV = json.load(open(_info)).get("provisional", 0) if os.path.exists(_info) else 0  # provisional update: our refit (Nov 20)
+
 # Epoch view: Epoch's own released posterior draws (eci_bootstraps.json, already on the published ECI scale), so the
-# probabilities go with the published ECIs. XCI view: the XCI fit's draws.
+# probabilities go with the published ECIs; in a provisional update, whose ECIs are all our refit of Epoch's model,
+# the refit's draws, for every pair (Tim, Nov 23). XCI view: the XCI fit's draws.
 EPH, XPH = {}, {}
 _boot = os.path.join(DATA, "epoch_capabilities_index", "eci_bootstraps.json")
-if not PAIR and os.path.exists(_boot):
+_refit = os.path.join(DATA, "bayes", "draws.npz")
+if not PAIR and PROV and os.path.exists(_refit):
+    _bd = np.load(_refit)
+    EPH = pair_probs(list(data), dict(zip(list(_bd["models"]), _bd["eci"].astype(float).T)))
+elif not PAIR and os.path.exists(_boot):
     _j = json.load(open(_boot))
     _caps = np.array(_j["model"]["capability_samples"], float)       # draws x models (ECI scale)
     if _j.get("eci_scaled", True):
@@ -197,9 +206,6 @@ from scipy.special import polygamma
 _pg = np.linspace(P_LO, P_HI, 401)
 FMAX = max([float(np.max(v["a"]**2 * v["k"]**2 * (_pg * (1 - _pg))**2 * (polygamma(1, _pg * v["k"]) + polygamma(1, (1 - _pg) * v["k"]))))
             for v in bench.values() if v["k"] > 0] or [1.0])
-_info = os.path.join(DATA, "ARCHIVE_INFO.json")
-DATA_DATE = json.load(open(_info)).get("data_date", "") if os.path.exists(_info) else ""
-PROV = json.load(open(_info)).get("provisional", 0) if os.path.exists(_info) else 0  # provisional update: our refit (Nov 20)
 PLOTLY = open(os.path.join(HERE, "vendor", "plotly-basic-2.35.2.min.js"), encoding="utf-8").read()
 
 BETA = "kappa" in bc.columns
