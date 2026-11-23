@@ -15,6 +15,7 @@ date-modified: 2026-11-23
 #| include: false
 import json
 import pandas as pd
+from scipy.special import polygamma
 # Everything this post reads sits in its folder, written by ../eci_assets.py (run it, or
 # ../../scripts/update_eci_posts.py, before rendering). Output is frozen after rendering (see _metadata.yml).
 w = pd.read_csv("weights.csv")
@@ -60,35 +61,20 @@ gq_c = adj.score_ceiling.get("GPQA diamond", 1.0)
 gq_94 = (0.94 - gq_rb) / (gq_c - gq_rb)
 opus = "Claude Opus 5.5"
 opus_top4 = w[w.model == opus].sort_values("share", ascending=False).head(4)
-HK, G55, FL, KK = "Claude Haiku 5.5", "GPT-5.5", "Gemini 3.8 Flash", "Kimi K3"
-FM4, PB, SQA, A2 = "FrontierMath-Tier-4-v2-Private", "ProofBench", "SimpleQA Verified", "ARC-AGI-2"
-fk = contrib(FL, KK)
-fk_two, fk_rest = fk[[PB, FM4]].sum(), fk.drop([PB, FM4]).sum()
-fk_best = fk.drop([PB, FM4]).idxmax()
-extra = bset(G55) - bset(HK)
 # How far the weighted average of readings sits from the published ECI, models at 150 and above
 gm = w.groupby("model").apply(lambda g: pd.Series({"ECI": g.ECI.iloc[0], "avg": (g.share * g.implied_ECI).sum()}), include_groups=False)
 gm = gm[gm.ECI >= 150]
 gap150 = (gm.avg - gm.ECI).abs()
 sig_lo, sig_hi = fitb.sigma.idxmin(), fitb.sigma.idxmax()
-fk_pull = list(fk.nsmallest(2).index)  # the two benchmarks pulling hardest toward KK
+def info_mid(s):  # a 50% score's information under Epoch's beta likelihood (footnote's formula), per unit alpha_b^2
+    k = 1 / (4 * s ** 2) - 1
+    return k ** 2 * polygamma(1, k / 2) / 8
 # The prose below makes claims about these numbers. If new data breaks one, stop here so a person
 # rewrites the sentence instead of publishing a false one.
 checks = {
-    "GPQA Diamond has a guessing rate (the footnote's example)": gq_rb >= 0.01,
-    f"{HK} and {G55} within 1 ECI point": abs(E(HK) - E(G55)) < 1,
-    f"{G55}'s extra benchmarks mostly agentic or coding": sum(("Agent" in dom.get(b, "")) or
-        ("Software engineering" in dom.get(b, "")) for b in extra) > len(extra) / 2,
-    f"{HK} far ahead on ProofBench": p(HK, PB) - p(G55, PB) > 0.2,
-    f"{HK} well behind on FrontierMath Tier 4 and SimpleQA Verified": min(p(G55, FM4) - p(HK, FM4), p(G55, SQA) - p(HK, SQA)) > 0.15,
-    f"{FL} and {KK} within 1 ECI point": abs(E(FL) - E(KK)) < 1,
-    f"{FL} leads on ARC-AGI-2 and SimpleQA, {KK} on ProofBench and FrontierMath Tier 4":
-        p(FL, A2) > p(KK, A2) and p(FL, SQA) > p(KK, SQA) and p(KK, PB) > p(FL, PB) and p(KK, FM4) > p(FL, FM4),
-    f"ProofBench and FrontierMath Tier 4 pull hardest toward {KK}": set(fk_pull) == {PB, FM4},
-    f"FrontierMath Tier 4 among both models' two heaviest": FM4 in top_k(FL) and FM4 in top_k(KK),
+    f"Claude 3.5 Sonnet and {opus} in the data (named in the last paragraph)": {"Claude 3.5 Sonnet", opus} <= set(w.model),
     f"a few benchmarks carry much of {opus}'s weight": opus_top4.share.sum() >= 0.4,
     "weighted averages within half a point of published ECI at 150+": gap150.max() < 0.5,
-    f"those two favor {KK}, the rest {FL}": fk_two < 0 < fk_rest,
 }
 failed = [k for k, ok in checks.items() if not ok]
 assert not failed, "Prose needs revisiting: " + "; ".join(failed)
@@ -99,7 +85,7 @@ The [Epoch Capabilities Index](https://epoch.ai/benchmarks/eci) (ECI) puts `{pyt
 
 ## The math underlying the ECI {#sec-model}
 
-Very briefly, an AI model's score on a given benchmark is [modeled](https://epoch.ai/data/eci-documentation/methodology) as a function of its capability $C_m$ (also referred as its ECI):
+Very briefly, an AI model's score on a given benchmark is [modeled](https://epoch.ai/data/eci-documentation/methodology) as a function of its capability $C_m$ (also referred to as its ECI):
 $$
 y_{mb} = S\big(\alpha_b \, [C_m - D_b]\big)
 $$ {#eq-eci}
@@ -109,15 +95,15 @@ Epoch fits all the capabilities, difficulties, slopes, and $\sigma_b$'s at once 
 
 ## Interpreting a model's ECI via its scores {#sec-panels}
 
-Because all parameters are fit jointly, each benchmark score influences the difficulty, slope, and scatter parameters at the same time as it influences a model's ECI, $C_m$. As an approximation, though, we can use the estimated values of each benchmark's difficulty, slope, and $\sigma_b$ to assess the influence of a given benchmark score on $C_m$. Each individual benchmark score can then be thought of as a separate measurement of capability: a score $y_{mb}$ implies $\hat{C}_{mb}$, the capability at which that score is most likely.^[For mid-range scores this is close to inverting @eq-eci, $D_b + S^{-1}(y_{mb}) / \alpha_b$ with $S^{-1}(s) = \ln[s / (1 - s)]$. Near 0% or 100% it can differ by a few ECI points, because the assumed noise there is lopsided.] A model's ECI can be thought of as a weighted average of these measurements, $C_m \approx \sum_b w_{mb} \hat{C}_{mb} / \sum_b w_{mb}$, with weights that are, approximately,[^exact]
+Because all parameters are fit jointly, each benchmark score influences the difficulty, slope, and scatter parameters at the same time as it influences a model's ECI, $C_m$. As an approximation, though, we can use the estimated values of each benchmark's difficulty, slope, and $\sigma_b$ to assess the influence of a given benchmark score on $C_m$. Each individual benchmark score can then be thought of as a separate measurement of capability: a score $y_{mb}$ implies $\hat{C}_{mb}$, the capability at which that score is most likely.^[For mid-range scores this is close to inverting @eq-eci, $D_b + S^{-1}(y_{mb}) / \alpha_b$ with $S^{-1}(s) = \ln[s / (1 - s)]$. Toward 0% or 100% the two diverge, because the assumed noise there is lopsided: typically by a few ECI points beyond 5% or 95%, and by a dozen or more for scores of exactly 0% or 100% (which Epoch clips to 0.1% and 99.9%).] A model's ECI can be thought of as a weighted average of these measurements, $C_m \approx \sum_b w_{mb} \hat{C}_{mb} / \sum_b w_{mb}$, with weights that are, approximately,[^exact]
 
 $$
-w_{mb} \propto \frac{\alpha_b^2 \, \hat{p}_{mb} (1 - \hat{p}_{mb})}{\sigma_b^2}, \qquad \hat{p}_{mb} = S\big(\alpha_b \, [C_m - D_b]\big)
+w_{mb} \propto \alpha_b^2 \left[\left(\frac{1}{4\sigma_b^2} - 3\right) \mu_{mb} (1 - \mu_{mb}) + 1\right], \qquad \mu_{mb} = S\big(\alpha_b \, [C_m - D_b]\big)
 $$ {#eq-weight}
 
-A benchmark score counts most when the corresponding part of that benchmark's curve is steep and there is little noise. A score near the top or bottom ends of a benchmark, or one anywhere on a benchmark whose estimated curve is flat, counts for little. Otherwise, the scatter $\sigma_b$ of benchmark noise runs from `{python} f"{fitb.sigma.min():.3f}"` (`{python} nm(sig_lo)`) to `{python} f"{fitb.sigma.max():.3f}"` (`{python} nm(sig_hi)`), so, other things equal, a score on the former counts about `{python} f"{(fitb.sigma.max() / fitb.sigma.min())**2:.0f}"` times as much as one on the latter.
+A benchmark score counts most when the corresponding part of that benchmark's curve is steep and there is little noise. A score near the top or bottom ends of a benchmark counts for less, and one anywhere on a benchmark whose estimated curve is flat counts for little. Otherwise, the scatter $\sigma_b$ of benchmark noise runs from `{python} f"{fitb.sigma.min():.3f}"` (`{python} nm(sig_lo)`) to `{python} f"{fitb.sigma.max():.3f}"` (`{python} nm(sig_hi)`), so, other things equal, a mid-curve score on the former counts about `{python} f"{info_mid(fitb.sigma.min()) / info_mid(fitb.sigma.max()):.0f}"` times as much as one on the latter.
 
-[^exact]: @eq-weight approximates the information a score carries about $C_m$ under Epoch's likelihood, $[\alpha_b \hat{p}_{mb} (1 - \hat{p}_{mb})]^2 \kappa_b^2 [\psi'(\hat{p}_{mb} \kappa_b) + \psi'((1 - \hat{p}_{mb}) \kappa_b)]$ with $\kappa_b = 1 / (4 \sigma_b^2) - 1$ and $\psi'$ the [trigamma function](https://en.wikipedia.org/wiki/Trigamma_function). The weight shares shown in @fig-panels use these more exact weights, which make the weighted average the capability that best fits the model's scores given every benchmark's fitted curve and scatter. Not included in the calculations depicted in @fig-panels is the way Epoch's ECI also averages over uncertainty in the benchmark curves, so the two differ slightly: by `{python} f"{gap150.median():.2f}"` points for the median model at ECI 150 and above, and at most `{python} f"{gap150.max():.2f}"`. (Epoch does not publish $\sigma_b$ updates, so the values here come from a refit of Epoch's [published model code](https://github.com/epoch-research/eci-public), which reproduces its ECI to within sampling error.)
+[^exact]: @eq-weight approximates the information a score carries about $C_m$ under Epoch's likelihood, $[\alpha_b \mu_{mb} (1 - \mu_{mb})]^2 \kappa_b^2 [\psi'(\mu_{mb} \kappa_b) + \psi'((1 - \mu_{mb}) \kappa_b)]$ with $\kappa_b = 1 / (4 \sigma_b^2) - 1$ and $\psi'$ the [trigamma function](https://en.wikipedia.org/wiki/Trigamma_function). The weight shares shown in @fig-panels are exact: each is the score's pull on $C_m$ divided by its distance $\hat{C}_{mb} - C_m$, which makes the weighted average the capability that best fits the model's scores given every benchmark's fitted curve and scatter; the expression above is their value for a score whose implied ECI is close to $C_m$. Not included in the calculations depicted in @fig-panels is the way Epoch's ECI also averages over uncertainty in the benchmark curves, so the two differ slightly: by `{python} f"{gap150.median():.2f}"` points for the median model at ECI 150 and above, and at most `{python} f"{gap150.max():.2f}"`. (Epoch does not publish $\sigma_b$ updates, so the values here come from a refit of Epoch's [published model code](https://github.com/epoch-research/eci-public), which reproduces its ECI to within sampling error.)
 
 (The chart below can optionally display analogous measures for an alternative ECI fit, XCI v0.1 [<i class="bi bi-github"></i>](https://github.com/hugetim/xci){title="XCI v0.1 code" aria-label="XCI v0.1 code on GitHub"}. It is the [XB+ variant](https://hugetim.github.io/posts/eci-clip/#xb-median-centered-beta-with-capability-scale-noise-also) with the capability noise spread allowed to vary by benchmark, $\tau_b$.)
 
@@ -128,7 +114,7 @@ A benchmark score counts most when the corresponding part of that benchmark's cu
 ECIs as weighted averages of benchmarks. Dots are the ECIs individual benchmark scores imply, the bars are the weights, and a dashed line shows each model's ECI. Hover over or tap a dot for the score behind it.
 :::
 
-The effective number of benchmarks behind a score can be summarized as $1 / \sum_b (\text{share}_{mb})^2$: about `{python} f"{neff('Claude 3.5 Sonnet'):.0f}"` for Claude 3.5 Sonnet and `{python} f"{neff(opus):.0f}"` for `{python} opus`, whose top four benchmarks (`{python} ", ".join(nm(b) for b in opus_top4.benchmark)`) carry `{python} f"{opus_top4.share.sum():.0%}"` of the weight.
+The effective number of benchmarks behind an ECI can be summarized as $1 / \sum_b (\text{share}_{mb})^2$: about `{python} f"{neff('Claude 3.5 Sonnet'):.0f}"` for Claude 3.5 Sonnet and `{python} f"{neff(opus):.0f}"` for `{python} opus`, whose top four benchmarks (`{python} ", ".join(nm(b) for b in opus_top4.benchmark)`) carry `{python} f"{opus_top4.share.sum():.0%}"` of the weight.
 
 
 *Data: [Epoch AI Benchmarking Hub](https://epoch.ai/benchmarks) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)), as of `{python} data_date`.*
