@@ -1,2 +1,2 @@
 rate,n_read_min,n_read_max,recon_median,recon_max,recon_max_model,recon_n_over_0_1,method,sigma_min,sigma_min_bench,sigma_max,sigma_max_bench,sigma_median,recon_max_tool
-14.0,4,29,0.07242708592167446,2.270864262434884,PaLM 2-L,102,beta,0.03993176597418945,METR Time Horizons,0.17926510226488893,MirrorCode,0.09509032974198622,
+14.0,4,29,0.07205582881222483,2.103734356977043,PaLM 2-L,99,beta,0.03984205437675042,METR Time Horizons,0.17934320378282068,MirrorCode,0.09524554659836927,
