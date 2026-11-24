@@ -1,10 +1,10 @@
 """Weighted-average decomposition of each model's capability under XCI 0.1 (Nov 17, 2026), the counterpart of
 scripts/eci_weights_beta.py for post 1A's Epoch / XCI 0.1 toggle.
 
-XCI 0.1 (scripts/bayes_eci.py --sbeta --median-centre --var-match 1 --tau-bench; "XB+ with benchmark-specific
+XCI 0.1 (xci.py in github.com/hugetim/xci, vendored by scripts/xci_vendor.py; "XB+ with benchmark-specific
 capability noise tau_b") scores one benchmark score y_mb by a censored stretched beta:
-    x ~ Beta(a, k - a), a = the median-centred shape (I_mu(a, k - a) = 1/2; median_beta.herm_a),
-    mu = sigmoid(alpha_b (C - D_b)), k + 1 = 1 / (4 sigma_b^2 + g_b^2 mu (1 - mu))   (xb_kappa.kappa_formula),
+    x ~ Beta(a, k - a), a = the median-centred shape (I_mu(a, k - a) = 1/2; median_table.herm_a),
+    mu = sigmoid(alpha_b (C - D_b)), k + 1 = 1 / (4 sigma_b^2 + g_b^2 mu (1 - mu))   (xci.kappa_formula),
     g_b = alpha_b tau_b (capability noise in logit units), y* = -delta + (1 + 2 delta) x,
     interior y: density of x at (y + delta) / (1 + 2 delta), over 1 + 2 delta;
     y = 0: P(x <= x0); y = 1: P(x >= 1 - x0), x0 = delta / (1 + 2 delta).
@@ -39,8 +39,10 @@ from scipy.special import expit
 from scipy.stats import beta as Beta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from median_beta import herm_z  # noqa: E402
-from xb_kappa import kappa_formula  # noqa: E402
+import xci_vendor  # noqa: E402
+sys.path.insert(0, xci_vendor.ensure())  # the published XCI code at its pinned commit
+from median_table import herm_z  # noqa: E402
+from xci import kappa_formula  # noqa: E402
 
 MU_EPS, H = 1e-6, 1e-4  # clip on mu (set from the fit by curves(): Epoch's 1e-6, XCI v0.1 1e-12); step in C (ECI points)
 
@@ -67,7 +69,7 @@ def shapes(C, D, a, sig, g):
     le = np.log((1 - MU_EPS) / MU_EPS)
     u = np.clip(a * (C - D), -le, le)
     mu = expit(u)
-    k = kappa_formula(sig, g, 1.0, 1.0, mu)  # slope_raw ** 1 * tau = g; mu (1 - mu) enters only as a small term
+    k = kappa_formula(sig, g, 1.0, mu)  # slope_raw ** 1 * tau = g (XCI v0.1: lambda = 1); mu (1 - mu) enters only as a small term
     z = herm_z(u, np.log(k))                 # the median table, indexed by logit(mu) directly
     return k * expit(z), k * expit(-z)
 

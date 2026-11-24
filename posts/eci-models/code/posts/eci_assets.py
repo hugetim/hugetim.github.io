@@ -74,7 +74,7 @@ for cmd in [weights] + full + xci + xfull + ["viz/build_viz.py", "viz/build_mode
 # Not included, being available elsewhere (Tim): the daily updater, and the fits (Epoch's model, scripts/bayes_eci.py:
 # github.com/hugetim/eci-clip-replication; XCI v0.1: github.com/hugetim/xci).
 CODE_1A = ["posts/eci_assets.py", "scripts/eci_weights_beta.py", "scripts/eci_full_weights.py", "scripts/xci_weights.py",
-           "scripts/median_beta.py", "scripts/logit_beta.py", "scripts/xb_kappa.py", "scripts/xci_full_weights.py", "viz/build_models.py", "viz/_style.py",
+           "scripts/xci_vendor.py", "scripts/xci_full_weights.py", "viz/build_models.py", "viz/_style.py",
            "viz/benchmark_order.csv", "viz/epoch_benchmark_pages.csv"]
 for f in CODE_1A:
     os.makedirs(os.path.join(A, "code", os.path.dirname(f)), exist_ok=True)

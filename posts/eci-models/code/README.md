@@ -15,7 +15,7 @@ using Epoch's [eci-public](https://github.com/epoch-research/eci-public) at comm
 - `scripts/eci_weights_beta.py`: each benchmark's weight in a model's ECI (benchmark curves held fixed) and the
   ECI each score implies;
 - `scripts/eci_full_weights.py`: the full-refit weights (the ticks on the weight bars), from the posterior draws;
-- `scripts/xci_weights.py` (with `median_beta.py`, `logit_beta.py`, `xb_kappa.py`) and `scripts/xci_full_weights.py`: the
-  same for the XCI v0.1 view;
+- `scripts/xci_weights.py` and `scripts/xci_full_weights.py`: the same for the XCI v0.1 view, using XCI's
+  `median_table.py` and `xci.py` (hugetim/xci at v0.1.1, fetched by `scripts/xci_vendor.py`);
 - `viz/build_models.py` (with `viz/_style.py`): the chart itself. Benchmark order: `viz/benchmark_order.csv`;
   names and Epoch page links: `viz/epoch_benchmark_pages.csv`.
