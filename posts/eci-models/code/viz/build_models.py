@@ -238,9 +238,9 @@ button{font-size:14px;padding:2px 10px}
 <div class="mth" id="mth" style="display:none"><button id="mE" aria-pressed="true">Epoch ECI</button><button id="mX" aria-pressed="false" title="XCI v0.1, an extension of Epoch AI&#39;s Bayesian ECI methodology">XCI v0.1</button></div>
 <div class="ctl"><button id="prev" aria-label="Previous frontier model">&larr;</button><select id="sel" style="font-size:14px;max-width:70vw"></select><button id="next" aria-label="Next frontier model">&rarr;</button></div>
 <div class="ctl2">Compare with <select id="sel2" style="font-size:14px;max-width:60vw"><option value="">(none)</option></select><button id="share" style="font-size:12px">Copy link to this view</button></div>
+<div id="plot"></div>
 <div class="legend" id="legend"></div>
 <div id="hdr"></div>
-<div id="plot"></div>
 <p id="info" style="font-size:13px;color:var(--text-secondary);min-height:40px">Hover over or tap a dot for the score behind it; click a benchmark name for Epoch's page on it.</p>
 <p class="foot" id="xnote" style="display:none">Under XCI v0.1, a score of 0% or 100% doesn&#39;t point to a single XCI: the higher a model&#39;s capability, the likelier a perfect score, without limit. So instead of a dot, a 100% score gets a bracket, [, at the XCI that a score just short of 100% would imply, meaning &ldquo;at least this&rdquo;; a 0% score gets ], meaning &ldquo;at most this&rdquo;. In the weighted average, such a score is still counted, at a reading beyond the model&#39;s XCI in the score&#39;s direction, marked by an open circle.</p>
 <p class="foot">&dagger; Epoch rescales this benchmark's scores before fitting: random guessing counts as 0% and, for some, a maximum below 100% counts as 100%. Scores here are the rescaled ones; hover a dot for the raw score. Data: <a href="https://epoch.ai/benchmarks" target="_blank" style="color:inherit">Epoch AI Benchmarking Hub</a><span id="pub">, __PUB__</span>__ASOF__.</p>
