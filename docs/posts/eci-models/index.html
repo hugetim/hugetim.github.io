@@ -212,7 +212,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Updated</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 26, 2026</p>
+      <p class="date-modified">November 27, 2026</p>
     </div>
   </div>
     
@@ -237,7 +237,7 @@ y_{mb} = S\big(\alpha_b \, [C_m - D_b]\big)
 <p><span id="eq-weight"><span class="math display">\[
 w_{mb} \propto \alpha_b^2 \left[\left(\frac{1}{4\sigma_b^2} - 3\right) y_{mb} (1 - y_{mb}) + 1\right]
 \tag{2}\]</span></span></p>
-<p>A benchmark score counts most when the corresponding part of that benchmark’s curve is steep and there is little noise. A score near the top or bottom ends of a benchmark counts for less, and one anywhere on a benchmark whose estimated curve is flat counts for little. Otherwise, the scatter <span class="math inline">\(\sigma_b\)</span> of benchmark noise runs from 0.040 (METR Time Horizons) to 0.179 (MirrorCode), so, other things equal, a mid-curve score on the former counts about 20 times as much as one on the latter.</p>
+<p>A benchmark score counts most when the corresponding part of that benchmark’s curve is steep and there is little noise. A score near the top or bottom ends of a benchmark counts for less, and one anywhere on a benchmark whose estimated curve is flat counts for little. Otherwise, the scatter <span class="math inline">\(\sigma_b\)</span> of benchmark noise runs from 0.040 (METR Time Horizons) to 0.178 (MirrorCode), so, other things equal, a mid-curve score on the former counts about 20 times as much as one on the latter.</p>
 <p>(The chart below can optionally display analogous measures for an alternative ECI fit, XCI v0.1 <a href="https://github.com/hugetim/xci" title="XCI v0.1 code" aria-label="XCI v0.1 code on GitHub"><i class="bi bi-github"></i></a>. It is the <a href="https://hugetim.github.io/posts/eci-clip/#xb-median-centered-beta-with-capability-scale-noise-also">XB+ variant</a> with the capability noise spread allowed to vary by benchmark, <span class="math inline">\(\tau_b\)</span>.)</p>
 <div id="fig-panels" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -250,7 +250,7 @@ Figure&nbsp;1: ECIs as weighted averages of benchmarks. Dots are the ECIs indivi
 </figure>
 </div>
 <p>The effective number of benchmarks behind an ECI can be summarized as <span class="math inline">\(1 / \sum_b (\text{share}_{mb})^2\)</span>: about 7 for Claude 3.5 Sonnet and 10 for Claude Opus 5.5, whose top four benchmarks (WeirdML v3, Remote Labor Index, FrontierSWE, Furniture Assembly) carry 54% of the weight.</p>
-<p><em>Data: <a href="https://epoch.ai/benchmarks">Epoch AI Benchmarking Hub</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>), as of November 26, 2026.</em></p>
+<p><em>Data: <a href="https://epoch.ai/benchmarks">Epoch AI Benchmarking Hub</a> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>), as of November 27, 2026.</em></p>
 <script>
 // size each embedded chart to the height it reports
 window.addEventListener('message', e => {
@@ -271,7 +271,7 @@ window.addEventListener('message', e => {
 
 <ol>
 <li id="fn1"><p>For mid-range scores this is close to inverting <a href="#eq-eci" class="quarto-xref">Equation&nbsp;1</a>, <span class="math inline">\(D_b + S^{-1}(y_{mb}) / \alpha_b\)</span> with <span class="math inline">\(S^{-1}(s) = \ln[s / (1 - s)]\)</span>. Toward 0% or 100% the two diverge, because the assumed noise there is lopsided: typically by a few ECI points beyond 5% or 95%, and by a dozen or more for scores of exactly 0% or 100% (which Epoch clips to 0.1% and 99.9%).<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p><a href="#eq-weight" class="quarto-xref">Equation&nbsp;2</a> approximates the information a score carries about <span class="math inline">\(C_m\)</span> under Epoch’s likelihood, <span class="math inline">\([\alpha_b y_{mb} (1 - y_{mb})]^2 \kappa_b^2 [\psi'(y_{mb} \kappa_b) + \psi'((1 - y_{mb}) \kappa_b)]\)</span> with <span class="math inline">\(\kappa_b = 1 / (4 \sigma_b^2) - 1\)</span> and <span class="math inline">\(\psi'\)</span> the <a href="https://en.wikipedia.org/wiki/Trigamma_function">trigamma function</a>. The weight shares shown in <a href="#fig-panels" class="quarto-xref">Figure&nbsp;1</a> are exact: each is the score’s pull on <span class="math inline">\(C_m\)</span> divided by its distance <span class="math inline">\(\tilde{C}_{mb} - C_m\)</span>, which makes the weighted average the capability that best fits the model’s scores given every benchmark’s fitted curve and scatter; the expression above is their value for a score whose implied ECI is close to <span class="math inline">\(C_m\)</span>. Not included in the calculations depicted in <a href="#fig-panels" class="quarto-xref">Figure&nbsp;1</a> is the way Epoch’s ECI also averages over uncertainty in the benchmark curves, so the two differ slightly: by 0.03 points for the median model at ECI 150 and above, and at most 0.25. (Epoch does not publish <span class="math inline">\(\sigma_b\)</span> updates, so the values here come from a refit of Epoch’s <a href="https://github.com/epoch-research/eci-public">published model code</a>, which reproduces its ECI to within sampling error.)<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p><a href="#eq-weight" class="quarto-xref">Equation&nbsp;2</a> approximates the information a score carries about <span class="math inline">\(C_m\)</span> under Epoch’s likelihood, <span class="math inline">\([\alpha_b y_{mb} (1 - y_{mb})]^2 \kappa_b^2 [\psi'(y_{mb} \kappa_b) + \psi'((1 - y_{mb}) \kappa_b)]\)</span> with <span class="math inline">\(\kappa_b = 1 / (4 \sigma_b^2) - 1\)</span> and <span class="math inline">\(\psi'\)</span> the <a href="https://en.wikipedia.org/wiki/Trigamma_function">trigamma function</a>. The weight shares shown in <a href="#fig-panels" class="quarto-xref">Figure&nbsp;1</a> are exact: each is the score’s pull on <span class="math inline">\(C_m\)</span> divided by its distance <span class="math inline">\(\tilde{C}_{mb} - C_m\)</span>, which makes the weighted average the capability that best fits the model’s scores given every benchmark’s fitted curve and scatter; the expression above is their value for a score whose implied ECI is close to <span class="math inline">\(C_m\)</span>. Not included in the calculations depicted in <a href="#fig-panels" class="quarto-xref">Figure&nbsp;1</a> is the way Epoch’s ECI also averages over uncertainty in the benchmark curves, so the two differ slightly: by 0.03 points for the median model at ECI 150 and above, and at most 0.26. (Epoch does not publish <span class="math inline">\(\sigma_b\)</span> updates, so the values here come from a refit of Epoch’s <a href="https://github.com/epoch-research/eci-public">published model code</a>, which reproduces its ECI to within sampling error.)<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -840,7 +840,7 @@ window.addEventListener('message', e => {
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="an">resources:</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">  - eci_model_panels.html</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="an">date-modified:</span><span class="co"> 2026-11-26</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="an">date-modified:</span><span class="co"> 2026-11-27</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
